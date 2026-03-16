@@ -1,0 +1,242 @@
+% Blueprint: Zero-Sum Problems, Extremal Set Theory, and P ≠ NP
+%
+% This document serves as the mathematical blueprint for the Lean 4
+% formalization. Each definition and theorem is linked to its Lean
+% declaration via \lean{} and marked with \leanok when fully formalized.
+% Dependencies are tracked via \uses{} for the dependency graph.
+
+\input{macros/common}
+
+\title{Zero-Sum Problems, Extremal Set Theory, and $\PP \neq \NP$}
+\author{zpnenp project}
+
+\chapter{Foundations}
+
+\section{Subset Sum}
+
+\begin{definition}[Subset Sum]
+  \label{def:subset_sum}
+  \lean{SubsetSum}
+  \leanok
+  Let $S$ be a finite set of integers and $t \in \ZZ$. The \emph{Subset Sum}
+  predicate $\mathrm{SubsetSum}(S, t)$ holds if there exists $S' \subseteq S$
+  such that $\sum_{x \in S'} x = t$.
+\end{definition}
+
+\begin{definition}[Zero-Sum Subset]
+  \label{def:subset_sum_zero}
+  \lean{SubsetSumZero}
+  \leanok
+  \uses{def:subset_sum}
+  $\mathrm{SubsetSumZero}(S)$ holds if there exists a nonempty $S' \subseteq S$
+  with $\sum_{x \in S'} x = 0$.
+\end{definition}
+
+\begin{definition}[Achievable Subset Sums]
+  \label{def:subset_sums}
+  \lean{subsetSums}
+  \leanok
+  \uses{def:subset_sum}
+  The set of all achievable subset sums of $S$:
+  \[
+    \mathrm{subsetSums}(S) = \left\{ \sum_{x \in S'} x \;\middle|\; S' \subseteq S \right\}.
+  \]
+\end{definition}
+
+\begin{theorem}[Subset Sum at Zero]
+  \label{thm:subset_sum_zero}
+  \lean{subsetSum_zero}
+  \leanok
+  \uses{def:subset_sum}
+  For any finite set $S$ of integers, $\mathrm{SubsetSum}(S, 0)$ holds
+  (witnessed by the empty subset).
+\end{theorem}
+
+\begin{theorem}[Monotonicity]
+  \label{thm:subset_sum_mono}
+  \lean{subsetSum_mono}
+  \leanok
+  \uses{def:subset_sum}
+  If $S \subseteq T$ and $\mathrm{SubsetSum}(S, t)$, then $\mathrm{SubsetSum}(T, t)$.
+\end{theorem}
+
+\begin{theorem}[Singleton]
+  \label{thm:subset_sum_singleton}
+  \lean{subsetSum_singleton}
+  \leanok
+  \uses{def:subset_sum}
+  $\mathrm{SubsetSum}(\{a\}, t)$ if and only if $t = 0$ or $t = a$.
+\end{theorem}
+
+\begin{theorem}[Counting Bound]
+  \label{thm:card_subset_sums_le}
+  \lean{card_subsetSums_le}
+  \leanok
+  \uses{def:subset_sums}
+  $|\mathrm{subsetSums}(S)| \leq 2^{|S|}$.
+\end{theorem}
+
+\section{Modular Subset Sum and EGZ}
+
+\begin{definition}[Modular Zero-Sum]
+  \label{def:mod_subset_sum_zero}
+  \lean{ModSubsetSumZero}
+  \leanok
+  $\mathrm{ModSubsetSumZero}(S, n)$ holds if there exists a nonempty
+  $S' \subseteq S$ with $n \mid \sum_{x \in S'} x$.
+\end{definition}
+
+\begin{theorem}[EGZ for Finsets]
+  \label{thm:egz_finset}
+  \lean{egz_finset}
+  \leanok
+  \uses{def:mod_subset_sum_zero}
+  If $|S| \geq 2n - 1$ and $n > 0$, then there exists $T \subseteq S$
+  with $|T| = n$ and $n \mid \sum_{x \in T} x$.
+\end{theorem}
+
+\begin{theorem}[EGZ Implies Modular Zero-Sum]
+  \label{thm:egz_mod}
+  \lean{egz_implies_modSubsetSumZero}
+  \leanok
+  \uses{thm:egz_finset, def:mod_subset_sum_zero}
+  If $|S| \geq 2n - 1$ and $n > 1$, then $\mathrm{ModSubsetSumZero}(S, n)$.
+
+  \textbf{Significance:} The adversary cannot construct a set of $\geq 2n-1$
+  integers that avoids having an $n$-element subset with sum divisible by~$n$.
+  Existence is forced by combinatorial structure.
+\end{theorem}
+
+\section{The Davenport Constant}
+
+\begin{definition}[Zero-Sum Free]
+  \label{def:zero_sum_free}
+  \lean{ZeroSumFree}
+  \leanok
+  A multiset $s$ over an additive group is \emph{zero-sum free} if no nonempty
+  submultiset of $s$ sums to zero.
+\end{definition}
+
+\begin{theorem}[Sum of Replicate]
+  \label{thm:sum_replicate}
+  \lean{multiset_sum_replicate}
+  \leanok
+  The sum of $k$ copies of $a$ equals $k \cdot a$ (i.e., $k \smul a$).
+\end{theorem}
+
+\begin{theorem}[Lower Bound: $\Dav(\ZZ/n\ZZ) \geq n$]
+  \label{thm:davenport_lower}
+  \lean{zeroSumFree_replicate_one}
+  \leanok
+  \uses{def:zero_sum_free, thm:sum_replicate}
+  For $n > 1$, the multiset of $(n-1)$ copies of $1$ in $\ZZ/n\ZZ$ is
+  zero-sum free. Therefore $\Dav(\ZZ/n\ZZ) \geq n$.
+
+  \begin{proof}
+    Any nonempty submultiset consists of $k$ copies of $1$ for $1 \leq k \leq n-1$.
+    Its sum is $k \in \ZZ/n\ZZ$. Since $1 \leq k \leq n-1$, we have $n \nmid k$,
+    so $k \neq 0$ in $\ZZ/n\ZZ$.
+  \end{proof}
+
+  \textbf{Key insight:} The extremal instance (longest zero-sum free multiset)
+  is \emph{maximally structured}---it consists entirely of copies of a single
+  element. Hard instances are not random; they are rigid.
+\end{theorem}
+
+\begin{theorem}[Upper Bound: $\Dav(\ZZ/n\ZZ) \leq n$]
+  \label{thm:davenport_upper}
+  \lean{davenport_upper}
+  \uses{def:zero_sum_free}
+  For $n > 0$, every multiset of $n$ elements in $\ZZ/n\ZZ$ contains a
+  nonempty submultiset summing to zero.
+
+  \begin{proof}[Proof sketch]
+    Let $a_1, \ldots, a_n \in \ZZ/n\ZZ$. Consider the prefix sums
+    $s_0 = 0, s_1 = a_1, s_2 = a_1 + a_2, \ldots, s_n = a_1 + \cdots + a_n$.
+    These are $n+1$ elements of $\ZZ/n\ZZ$, which has $n$ elements. By the
+    pigeonhole principle, $s_i = s_j$ for some $i < j$. Then
+    $a_{i+1} + \cdots + a_j = s_j - s_i = 0$.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[$\Dav(\ZZ/n\ZZ) = n$]
+  \label{thm:davenport_zmod}
+  \lean{davenport_ZMod}
+  \uses{thm:davenport_lower, thm:davenport_upper}
+  For $n > 1$:
+  \begin{enumerate}
+    \item Every multiset of $n$ elements in $\ZZ/n\ZZ$ has a nonempty
+          zero-sum submultiset.
+    \item There exists a multiset of $n-1$ elements in $\ZZ/n\ZZ$ with
+          no nonempty zero-sum submultiset.
+  \end{enumerate}
+\end{theorem}
+
+\chapter{Structural Theory (Planned)}
+
+\section{Inverse Zero-Sum Theorems}
+
+\begin{theorem}[Inverse Davenport for $\ZZ/n\ZZ$]
+  \label{thm:inverse_davenport}
+  \uses{def:zero_sum_free}
+  The zero-sum free multisets of maximal length $n-1$ in $\ZZ/n\ZZ$ are
+  precisely those consisting of $n-1$ copies of a single element $g$
+  with $\gcd(g, n) = 1$.
+\end{theorem}
+
+\begin{theorem}[Inverse EGZ]
+  \label{thm:inverse_egz}
+  \uses{thm:davenport_zmod}
+  The multisets of length $2n-2$ in $\ZZ/n\ZZ$ that do not contain an
+  $n$-element zero-sum submultiset are precisely those consisting of
+  $(n-1)$ copies of element $a$ and $(n-1)$ copies of element $b$,
+  with $\gcd(a - b, n) = 1$.
+\end{theorem}
+
+\section{Sumset Bounds}
+
+\begin{theorem}[Cauchy--Davenport]
+  \label{thm:cauchy_davenport}
+  For $A, B \subseteq \ZZ/p\ZZ$ with $p$ prime:
+  $|A + B| \geq \min(p,\; |A| + |B| - 1)$.
+\end{theorem}
+
+\section{Density Phase Transitions}
+
+\begin{definition}[Density]
+  \label{def:density}
+  The \emph{density} of a Subset Sum instance $(a_1, \ldots, a_n)$ is
+  $d = n / \log_2(\max_i a_i)$.
+\end{definition}
+
+\begin{theorem}[Density Dichotomy]
+  \label{thm:density_dichotomy}
+  \uses{def:density}
+  \begin{itemize}
+    \item Low density ($d < 0.94$): solvable in polynomial time via
+          lattice reduction (Lagarias--Odlyzko, CJLOSS).
+    \item High density ($d \gg 1$): solvable by pigeonhole---$2^n$
+          subsets exceed the number of possible sums.
+    \item Critical density ($d \approx 1$): believed to be maximally hard.
+  \end{itemize}
+\end{theorem}
+
+\chapter{Complexity Bridge (Planned)}
+
+\begin{theorem}[Subset Sum $\in \NP$]
+  \label{thm:subset_sum_np}
+  \uses{def:subset_sum}
+  Subset Sum is in $\NP$: given a subset $S'$, the verifier checks
+  $\sum_{x \in S'} x = t$ in polynomial time.
+\end{theorem}
+
+\begin{theorem}[$\PP \neq \NP$]
+  \label{thm:p_ne_np}
+  \uses{thm:inverse_davenport, thm:inverse_egz, thm:density_dichotomy, thm:subset_sum_np}
+  \textbf{Goal.} No polynomial-time algorithm solves Subset Sum in the
+  worst case.
+
+  \textbf{Strategy:} Use the structural characterization of hard instances
+  from zero-sum theory to show that any polynomial-time algorithm must fail
+  on instances at critical density with intermediate structure.
+\end{theorem}

@@ -1,0 +1,6 @@
+[project]
+name = "zpnenp"
+lean_lib = "Zpnenp"
+
+[blueprint]
+src = "src"

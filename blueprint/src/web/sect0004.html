@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \): The Davenport Constant</title>
+<link rel="next" href="sect0005.html" title="Structural Theory (Planned)" />
+<link rel="prev" href="sect0003.html" title="Modular Subset Sum and EGZ" />
+<link rel="up" href="sect0001.html" title="Foundations" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \)</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class=" active">
+  <a href="sect0001.html"><span class="toc_ref">1</span> <span class="toc_entry">Foundations</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sect0002.html"><span class="toc_ref">1.1</span> <span class="toc_entry">Subset Sum</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Modular Subset Sum and EGZ</span></a>
+ </li>
+<li class=" active current">
+  <a href="sect0004.html"><span class="toc_ref">1.3</span> <span class="toc_entry">The Davenport Constant</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0005.html"><span class="toc_ref">2</span> <span class="toc_entry">Structural Theory (Planned)</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0006.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Inverse Zero-Sum Theorems</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Sumset Bounds</span></a>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Density Phase Transitions</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">3</span> <span class="toc_entry">Complexity Bridge (Planned)</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000005">1.3 The Davenport Constant</h1>
+<div class="definition_thmwrapper theorem-style-plain" id="def:zero_sum_free">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">1.3.1</span>
+    <span class="definition_thmtitle">Zero-Sum Free</span>
+  </div>
+  <div class="definition_thmcontent">
+  <p>  ZeroSumFree A multiset \(s\) over an additive group is <em>zero-sum free</em> if no nonempty submultiset of \(s\) sums to zero. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:sum_replicate">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.3.2</span>
+    <span class="theorem_thmtitle">Sum of Replicate</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  multiset_sum_replicate The sum of \(k\) copies of \(a\) equals \(k \cdot a\) (i.e., \(k \smul a\)). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:davenport_lower">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.3.3</span>
+    <span class="theorem_thmtitle">Lower Bound: \(\Dav (\ZZ /n\ZZ ) \geq n\)</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  zeroSumFree_replicate_one def:zero_sum_free, thm:sum_replicate For \(n {\gt} 1\), the multiset of \((n-1)\) copies of \(1\) in \(\ZZ /n\ZZ \) is zero-sum free. Therefore \(\Dav (\ZZ /n\ZZ ) \geq n\). </p>
+<div class="proof_wrapper" id="a0000000012">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>Any nonempty submultiset consists of \(k\) copies of \(1\) for \(1 \leq k \leq n-1\). Its sum is \(k \in \ZZ /n\ZZ \). Since \(1 \leq k \leq n-1\), we have \(n \nmid k\), so \(k \neq 0\) in \(\ZZ /n\ZZ \). </p>
+
+  </div>
+</div>
+<p><b class="bfseries">Key insight:</b> The extremal instance (longest zero-sum free multiset) is <em>maximally structured</em>—it consists entirely of copies of a single element. Hard instances are not random; they are rigid. </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:davenport_upper">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.3.4</span>
+    <span class="theorem_thmtitle">Upper Bound: \(\Dav (\ZZ /n\ZZ ) \leq n\)</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  davenport_upper def:zero_sum_free For \(n {\gt} 0\), every multiset of \(n\) elements in \(\ZZ /n\ZZ \) contains a nonempty submultiset summing to zero. </p>
+<div class="proof_wrapper" id="a0000000013">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof sketch
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p> Let \(a_1, \ldots , a_n \in \ZZ /n\ZZ \). Consider the prefix sums \(s_0 = 0, s_1 = a_1, s_2 = a_1 + a_2, \ldots , s_n = a_1 + \cdots + a_n\). These are \(n+1\) elements of \(\ZZ /n\ZZ \), which has \(n\) elements. By the pigeonhole principle, \(s_i = s_j\) for some \(i {\lt} j\). Then \(a_{i+1} + \cdots + a_j = s_j - s_i = 0\). </p>
+
+  </div>
+</div>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:davenport_zmod">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.3.5</span>
+    <span class="theorem_thmtitle">\(\Dav (\ZZ /n\ZZ ) = n\)</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  davenport_ZMod thm:davenport_lower, thm:davenport_upper For \(n {\gt} 1\): </p>
+<ol class="enumerate">
+  <li><p>Every multiset of \(n\) elements in \(\ZZ /n\ZZ \) has a nonempty zero-sum submultiset. </p>
+</li>
+  <li><p>There exists a multiset of \(n-1\) elements in \(\ZZ /n\ZZ \) with no nonempty zero-sum submultiset. </p>
+</li>
+</ol>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sect0003.html" title="Modular Subset Sum and EGZ"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sect0001.html" title="Foundations"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0005.html" title="Structural Theory (Planned)"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

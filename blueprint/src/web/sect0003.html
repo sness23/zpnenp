@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \): Modular Subset Sum and EGZ</title>
+<link rel="next" href="sect0004.html" title="The Davenport Constant" />
+<link rel="prev" href="sect0002.html" title="Subset Sum" />
+<link rel="up" href="sect0001.html" title="Foundations" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \)</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class=" active">
+  <a href="sect0001.html"><span class="toc_ref">1</span> <span class="toc_entry">Foundations</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sect0002.html"><span class="toc_ref">1.1</span> <span class="toc_entry">Subset Sum</span></a>
+ </li>
+<li class=" active current">
+  <a href="sect0003.html"><span class="toc_ref">1.2</span> <span class="toc_entry">Modular Subset Sum and EGZ</span></a>
+ </li>
+<li class="">
+  <a href="sect0004.html"><span class="toc_ref">1.3</span> <span class="toc_entry">The Davenport Constant</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0005.html"><span class="toc_ref">2</span> <span class="toc_entry">Structural Theory (Planned)</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0006.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Inverse Zero-Sum Theorems</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Sumset Bounds</span></a>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Density Phase Transitions</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">3</span> <span class="toc_entry">Complexity Bridge (Planned)</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000004">1.2 Modular Subset Sum and EGZ</h1>
+<div class="definition_thmwrapper theorem-style-plain" id="def:mod_subset_sum_zero">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">1.2.1</span>
+    <span class="definition_thmtitle">Modular Zero-Sum</span>
+  </div>
+  <div class="definition_thmcontent">
+  <p>  ModSubsetSumZero \(\mathrm{ModSubsetSumZero}(S, n)\) holds if there exists a nonempty \(S' \subseteq S\) with \(n \mid \sum _{x \in S'} x\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:egz_finset">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.2.2</span>
+    <span class="theorem_thmtitle">EGZ for Finsets</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  egz_finset def:mod_subset_sum_zero If \(|S| \geq 2n - 1\) and \(n {\gt} 0\), then there exists \(T \subseteq S\) with \(|T| = n\) and \(n \mid \sum _{x \in T} x\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:egz_mod">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">1.2.3</span>
+    <span class="theorem_thmtitle">EGZ Implies Modular Zero-Sum</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  egz_implies_modSubsetSumZero thm:egz_finset, def:mod_subset_sum_zero If \(|S| \geq 2n - 1\) and \(n {\gt} 1\), then \(\mathrm{ModSubsetSumZero}(S, n)\). </p>
+<p><b class="bfseries">Significance:</b> The adversary cannot construct a set of \(\geq 2n-1\) integers that avoids having an \(n\)-element subset with sum divisible by&#160;\(n\). Existence is forced by combinatorial structure. </p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sect0002.html" title="Subset Sum"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sect0001.html" title="Foundations"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0004.html" title="The Davenport Constant"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>
