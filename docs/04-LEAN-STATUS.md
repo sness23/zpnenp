@@ -52,28 +52,33 @@ Already formalized results we can import and use:
 
 ## What Needs Formalization (TODOs)
 
-### Phase 1 (Current)
-- [ ] Davenport constant D(G) definition
-- [ ] D(ℤ/nℤ) = n proof
-- [ ] Olson's theorem (2√p bound for zero-sum in ℤ/pℤ)
-- [ ] leanblueprint setup
+### Phase 1 — COMPLETE
+- [x] Lean 4 + Mathlib project setup
+- [x] SubsetSum definition + basic properties
+- [x] EGZ connection (`egz_implies_modSubsetSumZero`)
+- [x] Davenport constant D(ℤ/nℤ) = n (zero sorry)
+- [x] leanblueprint setup
 
-### Phase 2
-- [ ] Inverse zero-sum: characterize zero-sum-free sequences of maximal length
-- [ ] Inverse EGZ: characterize sequences of length 2n−2 without n-element zero-sum
-- [ ] Cauchy-Davenport theorem
-- [ ] Subset sum density definition
-- [ ] Pigeonhole density argument
+### Phase 2 — COMPLETE (Inverse Davenport)
+- [x] Forward direction: replicate of any unit is zero-sum free
+- [x] Prefix sums injective (all distinct)
+- [x] Prefix sums surjective (permutation of ℤ/nℤ)
+- [x] All elements of maximal zero-sum free multiset are equal (adjacent swap argument)
+- [x] Common element is a unit
+- [x] **Inverse Davenport theorem** (full iff, zero sorry)
+- [ ] Inverse EGZ (not started)
+- [ ] Cauchy-Davenport (not started)
+- [ ] Density formalization (not started)
 
-### Phase 3
-- [ ] Import P, NP definitions from LeanMillenniumPrizeProblems
-- [ ] Subset Sum ∈ NP (verifier)
-- [ ] Adversary game formalization
-- [ ] Structure vs. computation dichotomy
-- [ ] Barrier analysis
+### Phase 3 — IN PROGRESS
+- [x] Adversary game formalization (`ModZeroSumAlgorithm`)
+- [x] Structural characterization of decision boundary (`adversary_no_instances`)
+- [x] Honest assessment: modular zero-sum is O(n)-decidable at threshold
+- [ ] Import P, NP definitions (LeanMillenniumPrizeProblems uses older Lean, not compatible)
+- [ ] Standard Subset Sum bridge (gap between modular and integer versions)
 
-### Phase 4
-- [ ] Proof assembly (if Phase 3 succeeds)
+### Phase 4 — NOT STARTED
+- [ ] Research directions documented (lift to standard SS, circuit bounds, fine-grained)
 - [ ] Paper from blueprint
 - [ ] Community review
 

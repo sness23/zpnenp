@@ -101,16 +101,92 @@ theorem ZeroSumFree.ne_zero {n : ℕ} {s : Multiset (ZMod n)}
   intro h; subst h
   exact hzsf {0} (Multiset.singleton_le.mpr ha) (by simp) (by simp)
 
-/-- **All elements of a maximal zero-sum free multiset are equal.**
+/-- Two injective functions from Fin n into an n-element type that agree
+    on all inputs except possibly one must agree everywhere. -/
+private theorem injective_agree_of_agree_except {α : Type*} [Fintype α] [DecidableEq α]
+    {n : ℕ} {f g : Fin n → α}
+    (hf : Function.Injective f) (hg : Function.Injective g)
+    (hcard : Fintype.card α = n)
+    {k : Fin n} (h : ∀ i, i ≠ k → f i = g i) : f k = g k := by
+  by_contra hne
+  have hf_bij := (Fintype.bijective_iff_injective_and_card f).mpr
+    ⟨hf, by rw [Fintype.card_fin, hcard]⟩
+  obtain ⟨j, hj⟩ := hf_bij.surjective (g k)
+  have hjk : j ≠ k := by intro h'; subst h'; exact hne hj
+  have hfg : f j = g j := h j hjk
+  -- g k = f j = g j, so k = j by injectivity, contradiction
+  have : g k = g j := by rw [← hfg, ← hj]
+  exact hjk.symm (hg this)
 
-    Proof: Swap any two adjacent elements in a list ordering. Both
-    orderings give prefix sums that are permutations of ℤ/nℤ. The
-    two permutations agree at all positions except one, forcing them
-    to agree everywhere. Therefore the two swapped elements are equal. -/
 theorem ZeroSumFree.all_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     (hzsf : ZeroSumFree s) (hcard : s.card = n - 1)
     {a b : ZMod n} (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  sorry
+  haveI : NeZero n := ⟨by omega⟩
+  by_contra hab; push_neg at hab
+  -- Extract a and b from s, build two list orderings
+  have hb' : b ∈ s.erase a := by
+    rw [Multiset.mem_erase_of_ne (Ne.symm hab)]; exact hb
+  -- s = a ::ₘ b ::ₘ rest
+  have hs1 : s = a ::ₘ (s.erase a) := (Multiset.cons_erase ha).symm
+  have hs2 : s.erase a = b ::ₘ ((s.erase a).erase b) := (Multiset.cons_erase hb').symm
+  set rest := (s.erase a).erase b
+  set rl := rest.toList
+  have hrl : (↑rl : Multiset _) = rest := Multiset.coe_toList rest
+  -- l₁ = [a, b, ...rest], l₂ = [b, a, ...rest]
+  set l₁ : List (ZMod n) := a :: b :: rl
+  set l₂ : List (ZMod n) := b :: a :: rl
+  -- ↑l₁ = a ::ₘ b ::ₘ rest = s
+  have hcoe : ∀ (x y : ZMod n), (↑(x :: y :: rl) : Multiset _) = x ::ₘ y ::ₘ rest := by
+    intro x y; change x ::ₘ y ::ₘ (↑rl : Multiset _) = x ::ₘ y ::ₘ rest; rw [hrl]
+  have hl₁ : (↑l₁ : Multiset _) = s := by rw [hcoe, hs1, hs2]
+  have hl₂ : (↑l₂ : Multiset _) = s := by
+    rw [hcoe]; rw [Multiset.cons_swap]; rw [hs1, hs2]
+  -- Prefix sum functions
+  let ps₁ : Fin n → ZMod n := fun i => (l₁.take i.val).sum
+  let ps₂ : Fin n → ZMod n := fun i => (l₂.take i.val).sum
+  -- Length facts
+  have hlen₁ : l₁.length = n - 1 := by
+    have h := congrArg Multiset.card hl₁; simp at h; omega
+  have hlen₂ : l₂.length = n - 1 := by
+    have h := congrArg Multiset.card hl₂; simp at h; omega
+  -- Both are injective
+  have hinj₁ : Function.Injective ps₁ := by
+    intro ⟨i, hi⟩ ⟨j, hj⟩ heq
+    by_contra hij; push_neg at hij
+    have hi' : i ≤ l₁.length := by omega
+    have hj' : j ≤ l₁.length := by omega
+    exact prefix_sums_injective (by omega) (hl₁ ▸ hzsf) hi' hj'
+      (fun h => hij (Fin.ext h)) heq
+  have hinj₂ : Function.Injective ps₂ := by
+    intro ⟨i, hi⟩ ⟨j, hj⟩ heq
+    by_contra hij; push_neg at hij
+    have hi' : i ≤ l₂.length := by omega
+    have hj' : j ≤ l₂.length := by omega
+    exact prefix_sums_injective (by omega) (hl₂ ▸ hzsf) hi' hj'
+      (fun h => hij (Fin.ext h)) heq
+  -- ps₁ and ps₂ agree at all positions except 1
+  -- At position 0: both are 0
+  -- At position 1: ps₁ = a, ps₂ = b
+  -- At position k ≥ 2: both are a + b + (sum of first k-2 of rl)
+  have hps_agree : ∀ i : Fin n, i ≠ ⟨1, by omega⟩ → ps₁ i = ps₂ i := by
+    intro ⟨i, hi⟩ hne
+    simp only [ps₁, ps₂, l₁, l₂]
+    rcases i with _ | i
+    · -- i = 0
+      simp
+    · rcases i with _ | i
+      · -- i = 1, excluded
+        exfalso; exact hne rfl
+      · -- i ≥ 2
+        simp only [List.take_succ_cons, List.sum_cons]
+        -- Both: a + (b + (rl.take i).sum) vs b + (a + (rl.take i).sum)
+        rw [add_left_comm]
+  -- Apply the general lemma
+  have h1 := injective_agree_of_agree_except hinj₁ hinj₂ (by rw [ZMod.card]) hps_agree
+  -- h1 : ps₁ ⟨1, _⟩ = ps₂ ⟨1, _⟩, i.e., a = b
+  simp only [ps₁, ps₂, l₁, l₂, List.take_succ_cons, List.take_zero,
+    List.nil_append, List.sum_cons, List.sum_nil, add_zero] at h1
+  exact hab h1
 
 /-- If (n-1) copies of g are zero-sum free, then g is a unit. -/
 theorem isUnit_of_replicate_zeroSumFree {n : ℕ} (hn : 1 < n) {g : ZMod n}
