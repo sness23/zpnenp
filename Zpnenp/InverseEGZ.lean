@@ -136,19 +136,132 @@ theorem egzExtremal_free (n : ℕ) (hn : 1 < n) (a b : ZMod n)
     omega
   exact absurd (Nat.le_of_dvd hj_pos hdvd) (by omega)
 
+/-! ## Helper lemmas for backward direction -/
+
+/-- In an EGZ-free multiset, no element can appear n or more times. -/
+theorem EGZFree.count_le {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hfree : EGZFree s) (a : ZMod n) : Multiset.count a s ≤ n - 1 := by
+  haveI : NeZero n := ⟨by omega⟩
+  by_contra h; push_neg at h
+  exact hfree (Multiset.replicate n a)
+    (Multiset.le_count_iff_replicate_le.mp (by omega))
+    (Multiset.card_replicate n a)
+    (by rw [multiset_sum_replicate, nsmul_eq_mul, ZMod.natCast_self, zero_mul])
+
+-- count_add_count helper is inlined in the backward direction proof
+-- to avoid induction generalization issues with theorem parameters
+
+/-- If a-b is not a unit, the extremal multiset has an n-element zero-sum submultiset. -/
+theorem not_egzFree_of_not_isUnit (n : ℕ) (hn : 1 < n) (a b : ZMod n)
+    (hab : a ≠ b) (hnu : ¬IsUnit (a - b)) :
+    ¬EGZFree (egzExtremal n a b) := by
+  haveI : NeZero n := ⟨by omega⟩
+  -- Since a-b is not a unit in finite ring ZMod n, it has a nontrivial zero divisor
+  have hzd : ∃ c : ZMod n, c ≠ 0 ∧ c * (a - b) = 0 := by
+    by_contra hall; push_neg at hall
+    have hinj : Function.Injective (· * (a - b) : ZMod n → ZMod n) := by
+      intro x y (hxy : x * (a - b) = y * (a - b))
+      by_contra hne
+      have : (x - y) * (a - b) = 0 := by rw [sub_mul, hxy, sub_self]
+      exact hall (x - y) (sub_ne_zero.mpr hne) this
+    have hsurj := Finite.surjective_of_injective hinj
+    obtain ⟨x, hx⟩ := hsurj 1
+    have hab1 : (a - b) * x = 1 := by rw [mul_comm]; exact hx
+    exact hnu ⟨⟨a - b, x, hab1, hx⟩, rfl⟩
+  obtain ⟨c, hc_ne, hc_mul⟩ := hzd
+  -- m = c.val ∈ {1, ..., n-1} and (m : ZMod n) * (a-b) = 0
+  set m := c.val with hm_def
+  have hm_pos : 0 < m := by
+    rw [hm_def]; exact Nat.pos_of_ne_zero (fun h => hc_ne ((ZMod.val_eq_zero c).mp h))
+  have hm_lt : m < n := ZMod.val_lt c
+  have hm_cast : (m : ZMod n) = c := by
+    show ((ZMod.val c : ℕ) : ZMod n) = c
+    rw [ZMod.natCast_val, ZMod.cast_id]
+  -- The submultiset: m copies of a + (n-m) copies of b
+  intro hfree
+  apply hfree (Multiset.replicate m a + Multiset.replicate (n - m) b)
+  · -- t ≤ egzExtremal n a b
+    rw [Multiset.le_iff_count]; intro x
+    simp only [egzExtremal, Multiset.count_add, Multiset.count_replicate]
+    by_cases hxa : x = a
+    · subst hxa; simp [Ne.symm hab]; omega
+    · by_cases hxb : x = b
+      · subst hxb; simp [hab]; omega
+      · simp [Ne.symm hxa, Ne.symm hxb]
+  · -- card = n
+    simp only [Multiset.card_add, Multiset.card_replicate]; omega
+  · -- sum = 0
+    simp only [Multiset.sum_add, multiset_sum_replicate, nsmul_eq_mul]
+    rw [Nat.cast_sub (by omega : m ≤ n), ZMod.natCast_self, zero_sub,
+        neg_mul, ← sub_eq_add_neg, ← mul_sub, hm_cast]
+    exact hc_mul
+
+/-- **Key Lemma**: An EGZ-free multiset of size 2n-2 has at most 2 distinct values.
+    This is the mathematical core of the backward direction. -/
+theorem EGZFree.at_most_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
+    ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
+  sorry
+
 /-! ## The Inverse EGZ Theorem -/
 
 /-- **Inverse EGZ Theorem for Z/nZ.**
 
     A multiset of 2n-2 elements is EGZ-free iff it has the extremal form.
     Forward direction: proved above.
-    Backward direction: requires showing any EGZ-free multiset of size
-    2n-2 has exactly 2 distinct values, each with multiplicity n-1. -/
+    Backward direction: uses structural lemmas above. The one remaining sorry
+    is `EGZFree.at_most_two_values` — the fact that EGZ-free multisets of
+    size 2n-2 have at most 2 distinct values. -/
 theorem inverse_egz (n : ℕ) (hn : 1 < n) (s : Multiset (ZMod n))
     (hcard : s.card = 2 * n - 2) :
     EGZFree s ↔ ∃ a b : ZMod n, IsUnit (a - b) ∧ s = egzExtremal n a b := by
   constructor
-  · intro hfree; sorry  -- backward direction
+  · intro hfree
+    -- Step 1: s has at most 2 distinct values
+    obtain ⟨a, b, hmem⟩ := EGZFree.at_most_two_values hn hfree hcard
+    -- Step 2: a ≠ b (if a = b, all elements equal a, count ≥ 2n-2 ≥ n, impossible)
+    have hab : a ≠ b := by
+      intro h; subst h
+      have hall : ∀ y ∈ s, y = a := fun y hy => by
+        rcases hmem y hy with rfl | rfl <;> rfl
+      have hle : Multiset.count a s = s.card :=
+        Multiset.count_eq_card.mpr (fun y hy => (hall y hy).symm)
+      have := EGZFree.count_le hn hfree a
+      omega
+    -- Step 3: each value appears exactly n-1 times
+    have hcnt : Multiset.count a s + Multiset.count b s = s.card := by
+      suffices key : ∀ (t : Multiset (ZMod n)), (∀ x ∈ t, x = a ∨ x = b) →
+          Multiset.count a t + Multiset.count b t = t.card from key s hmem
+      intro t ht
+      induction t using Multiset.induction with
+      | empty => simp
+      | cons x t ih =>
+        simp only [Multiset.count_cons, Multiset.card_cons]
+        have ih' := ih (fun y hy => ht y (Multiset.mem_cons_of_mem hy))
+        rcases ht x (Multiset.mem_cons_self x t) with rfl | rfl
+        · simp [Ne.symm hab]; omega
+        · simp [hab]; omega
+    have hca_le := EGZFree.count_le hn hfree a
+    have hcb_le := EGZFree.count_le hn hfree b
+    have hca : Multiset.count a s = n - 1 := by omega
+    have hcb : Multiset.count b s = n - 1 := by omega
+    -- Step 4: s = egzExtremal n a b
+    have hs_eq : s = egzExtremal n a b := by
+      ext x
+      simp only [egzExtremal, Multiset.count_add, Multiset.count_replicate]
+      by_cases hxa : x = a
+      · subst hxa; rw [if_pos rfl, if_neg (Ne.symm hab)]; omega
+      · by_cases hxb : x = b
+        · subst hxb; rw [if_neg hab, if_pos rfl]; omega
+        · have : Multiset.count x s = 0 :=
+            Multiset.count_eq_zero.mpr
+              (fun hx => by rcases hmem x hx with rfl | rfl <;> contradiction)
+          rw [if_neg (Ne.symm hxa), if_neg (Ne.symm hxb)]; omega
+    -- Step 5: a - b is a unit
+    have hab_unit : IsUnit (a - b) := by
+      by_contra hnu
+      exact not_egzFree_of_not_isUnit n hn a b hab hnu (hs_eq ▸ hfree)
+    exact ⟨a, b, hab_unit, hs_eq⟩
   · rintro ⟨a, b, hab, rfl⟩; exact egzExtremal_free n hn a b hab
 
 /-! ## Significance
