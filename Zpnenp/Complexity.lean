@@ -71,9 +71,18 @@ theorem adversary_no_instances (n : ℕ) (hn : 1 < n) (s : Multiset (ZMod n))
 theorem adversary_large_always_yes (n : ℕ) (hn : 0 < n) (s : Multiset (ZMod n))
     (hcard : n ≤ s.card) :
     ∃ t ≤ s, t ≠ 0 ∧ t.sum = 0 := by
-  -- A multiset of size ≥ n in ZMod n has a zero-sum submultiset.
-  -- We extract a submultiset of size exactly n and apply davenport_upper.
-  sorry
+  -- Take the first n elements from the list representation
+  set l := s.toList
+  have hperm : (↑l : Multiset _) = s := Multiset.coe_toList s
+  have hlen : l.length = s.card := by simp [l, Multiset.length_toList]
+  -- Take the first n elements as a submultiset
+  set s' : Multiset (ZMod n) := ↑(l.take n)
+  have hsub : s' ≤ s := by
+    rw [← hperm]; exact Multiset.coe_le.mpr (List.take_sublist n l).subperm
+  have hcard' : s'.card = n := by
+    simp [s', List.length_take, hlen]; omega
+  obtain ⟨t, ht, hne, hsum⟩ := davenport_upper n hn s' hcard'
+  exact ⟨t, le_trans ht hsub, hne, hsum⟩
 
 /-! ## The Structure-Computation Gap
 
