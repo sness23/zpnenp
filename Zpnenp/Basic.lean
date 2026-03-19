@@ -18,3 +18,4 @@ import Zpnenp.CauchyDavenport
 import Zpnenp.InverseEGZ
 import Zpnenp.Freiman
 import Zpnenp.ProofComplexity
+import Zpnenp.SumProduct
