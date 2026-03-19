@@ -1,8 +1,8 @@
 name: Lean Action CI
 
+# Disabled: Mathlib builds exceed GitHub Actions free-tier time limits.
+# Run locally with `lake build` instead.
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
