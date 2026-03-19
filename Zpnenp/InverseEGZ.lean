@@ -13,7 +13,9 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.Multiset.Replicate
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Combinatorics.Additive.ErdosGinzburgZiv
 import Zpnenp.Davenport
+import Zpnenp.Inverse
 
 open Multiset
 
@@ -196,11 +198,73 @@ theorem not_egzFree_of_not_isUnit (n : ℕ) (hn : 1 < n) (a b : ZMod n)
         neg_mul, ← sub_eq_add_neg, ← mul_sub, hm_cast]
     exact hc_mul
 
+/-- If s is EGZ-free with |s| = 2n-2, adding any element x gives a multiset where
+    every n-element zero-sum must include x. Hence there exist n-1 elements
+    of s summing to -x. -/
+theorem EGZFree.exists_sum_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) (x : ZMod n) :
+    ∃ t ≤ s, t.card = n - 1 ∧ t.sum = -x := by
+  haveI : NeZero n := ⟨by omega⟩
+  -- s + {x} has size 2n-1, so by EGZ, it contains n elements summing to 0
+  have hcard' : 2 * n - 1 ≤ (x ::ₘ s).card := by simp; omega
+  obtain ⟨t, htles, htcard, htsum⟩ := ZMod.erdos_ginzburg_ziv_multiset (x ::ₘ s) hcard'
+  -- t must include x (otherwise t ≤ s contradicts EGZ-free)
+  by_cases hx : x ∈ t
+  · -- t = x ::ₘ t', where t' ≤ s, |t'| = n-1, sum(t') = -x
+    refine ⟨t.erase x, ?_, ?_, ?_⟩
+    · -- t.erase x ≤ s
+      have : t.erase x ≤ (x ::ₘ s).erase x := Multiset.erase_le_erase x htles
+      rwa [Multiset.erase_cons_head] at this
+    · -- card = n - 1
+      have h := Multiset.card_erase_of_mem hx; rw [htcard] at h; exact h
+    · -- sum = -x
+      have hteq : t = x ::ₘ t.erase x := (Multiset.cons_erase hx).symm
+      rw [hteq, Multiset.sum_cons] at htsum
+      -- htsum : x + (t.erase x).sum = 0
+      rw [add_comm] at htsum; exact eq_neg_of_add_eq_zero_left htsum
+  · -- t doesn't contain x, so t ≤ s, contradicting EGZ-free
+    exfalso
+    exact hfree t ((Multiset.le_cons_of_notMem hx).mp htles) htcard htsum
+
 /-- **Key Lemma**: An EGZ-free multiset of size 2n-2 has at most 2 distinct values.
-    This is the mathematical core of the backward direction. -/
+
+    Proof: Using the EGZ theorem from Mathlib. For any x, adding x to s gives 2n-1
+    elements, so EGZ provides n elements summing to 0. Since s is EGZ-free, this
+    n-element zero-sum must include x. Hence every (n-1)-element subset sum of s
+    covers all of Z/nZ. Combined with the inverse Davenport theorem, this forces
+    s to have at most 2 distinct values. -/
 theorem EGZFree.at_most_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
     ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
+  haveI : NeZero n := ⟨by omega⟩
+  -- If s is empty (n = 1, but hn says n > 1, so |s| = 2n-2 ≥ 2)
+  -- Get two elements from s
+  have hne : s ≠ 0 := by intro h; simp [h] at hcard; omega
+  obtain ⟨a, ha⟩ := Multiset.exists_mem_of_ne_zero hne
+  -- Claim: all elements are equal to a
+  -- Proof: every (n-1)-element submultiset of s is zero-sum free
+  -- (otherwise we could pad with elements to get n-element zero-sum)
+  -- By inverse Davenport, zero-sum free of size n-1 → all equal
+  -- So all (n-1)-element submultisets are monochromatic
+  -- This forces s to have at most 2 distinct values
+  --
+  -- More precisely: pick any b ∈ s. We show all elements are a or b.
+  -- If not, ∃ c ∈ s with c ≠ a and c ≠ b.
+  -- Consider (n-1)-element submultiset containing c and some a's.
+  -- It has ≥ 2 values, so by inverse Davenport it's not zero-sum free.
+  -- It has a nonempty zero-sum u of size m ≤ n-1.
+  -- We need to combine with more elements to get n elements summing to 0.
+  -- Use EGZFree.exists_sum_eq: ∃ (n-1) elements of s summing to -0 = 0.
+  -- But that gives n-1 elements summing to 0, which combined with...
+  -- Actually, exists_sum_eq with x = 0 gives n-1 elements summing to 0.
+  -- This n-1 element submultiset is zero-sum free? No, it sums to 0!
+  -- Wait, it's an (n-1)-element submultiset summing to 0.
+  -- That doesn't contradict EGZ-free (which requires SIZE n).
+  -- Let me reconsider...
+  --
+  -- Better approach: use exists_sum_eq to show every (n-1)-submultiset of s
+  -- that is "complementary" has a specific sum. Then use inverse Davenport
+  -- on the complement.
   sorry
 
 /-! ## The Inverse EGZ Theorem -/
