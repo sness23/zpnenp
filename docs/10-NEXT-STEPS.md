@@ -48,7 +48,13 @@ explicit Lean code excerpts.
 
 ## Priority 2: Deepen the Math
 
-### 2A. Freiman's Theorem Connection (1-2 weeks)
+### 2A. Freiman's Theorem Connection ✅ STARTED
+Module `Freiman.lean` created with small doubling dichotomy,
+subset sum definitions, Plünnecke-Ruzsa connection.
+Proved: addDoubling_gt_one_of_small, subset sum basic lemmas.
+Remaining: iterated sumset growth, Freiman's theorem proper.
+
+### 2A-original. Freiman's Theorem Connection (1-2 weeks)
 **What**: Sets with small doubling (|A+A| ≤ K|A|) are contained
 in generalized arithmetic progressions.
 
@@ -62,7 +68,13 @@ must be structured. Together: Subset Sum inputs are either
 Freiman-Ruzsa conjecture in Lean 4. Import their results or
 prove a simpler version of Freiman for Z/pZ.
 
-### 2B. Sum-Product Connection (2-4 weeks)
+### 2B. Sum-Product Connection ✅ STARTED
+Module `SumProduct.lean` created connecting Erdős-Szemerédi to Subset Sum.
+Proved: sum_product_growth (qualitative, from Cauchy-Davenport),
+card_add_self_ge, achievableSums definition.
+Framework: additive-multiplicative tension, 3-way dichotomy.
+
+### 2B-original. Sum-Product Connection (2-4 weeks)
 **What**: Connect Erdős-Szemerédi sum-product theorem to
 Subset Sum hardness.
 
@@ -108,7 +120,13 @@ systematically explored in the complexity theory literature."
    distinguish functions computable by small circuits from
    random functions
 
-### 3B. Proof Complexity / PHP (CONNECTS TO EXISTING WORK, 2-4 weeks)
+### 3B. Proof Complexity / PHP ✅ DONE
+Module `ProofComplexity.lean` (zero sorry!) connects davenport_upper
+to proof complexity. Proved: pigeonhole_fin, prefixSums, collision
+semantics, davenportPHP_not_injective, structured PHP analysis.
+Framework: connections to Haken, Ajtai, Krajíček-Pudlák.
+
+### 3B-original. Proof Complexity / PHP (CONNECTS TO EXISTING WORK, 2-4 weeks)
 **What**: Connect our pigeonhole arguments to proof complexity
 lower bounds.
 
