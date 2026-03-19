@@ -250,10 +250,22 @@ theorem EGZFree.exists_sum_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     The gap: Step 1 requires finding x where the complement IS zero-sum free,
     and Step 4 requires n-m ≤ n-1 (ensured by m ≥ 1). When no complement is
     zero-sum free, or when count(g,s) < n-1 for all g, a more sophisticated
-    argument involving iterated Davenport applications is needed. -/
+    argument involving iterated Davenport applications is needed.
+
+    The full proof uses exists_sum_eq to show that for any c ∈ s, the
+    complement of the (n-1)-submultiset summing to 0 (after translating by c)
+    has n-1 nonzero elements. If this complement has ≥ 2 values, inverse
+    Davenport gives a zero-sum of size m ≥ 2. Combined with n-m copies of c
+    (need count(c,s) ≥ n-m), this gives an n-element zero-sum.
+
+    When max_count ≥ n-2, we always have n-m ≤ n-2 ≤ max_count since m ≥ 2.
+
+    The remaining open case is when ALL values appear ≤ n-3 times (requires n ≥ 5).
+    For n ≤ 4, the pigeonhole principle forces some value to have count ≥ n-2. -/
 theorem EGZFree.at_most_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
     ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
+  haveI : NeZero n := ⟨by omega⟩
   sorry
 
 /-! ## The Inverse EGZ Theorem -/
