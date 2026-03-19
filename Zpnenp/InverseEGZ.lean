@@ -228,43 +228,32 @@ theorem EGZFree.exists_sum_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
 
 /-- **Key Lemma**: An EGZ-free multiset of size 2n-2 has at most 2 distinct values.
 
-    Proof: Using the EGZ theorem from Mathlib. For any x, adding x to s gives 2n-1
-    elements, so EGZ provides n elements summing to 0. Since s is EGZ-free, this
-    n-element zero-sum must include x. Hence every (n-1)-element subset sum of s
-    covers all of Z/nZ. Combined with the inverse Davenport theorem, this forces
-    s to have at most 2 distinct values. -/
+    **Proof sketch** (not yet fully formalized):
+
+    Suppose s has ≥ 3 distinct values. We derive a contradiction with EGZ-free.
+
+    Step 1: By `exists_sum_eq`, for any x the complement of the (n-1)-submultiset
+    summing to -x also has n-1 elements. If this complement is zero-sum free,
+    by `inverse_davenport` it equals replicate (n-1) g for some unit g, so
+    count(g, s) = n-1.
+
+    Step 2: With count(g, s) = n-1, let R = s minus the g-copies (|R| = n-1,
+    ≥ 2 distinct values, no copies of g).
+
+    Step 3: Shift R by -g: the multiset R.map (· - g) has n-1 nonzero elements
+    with ≥ 2 values. By `inverse_davenport` contrapositive, it has a nonempty
+    zero-sum submultiset v of size m. The corresponding u ≤ R has sum = m*g.
+
+    Step 4: u + replicate (n-m) g has n elements summing to n*g = 0,
+    contradicting EGZ-free.
+
+    The gap: Step 1 requires finding x where the complement IS zero-sum free,
+    and Step 4 requires n-m ≤ n-1 (ensured by m ≥ 1). When no complement is
+    zero-sum free, or when count(g,s) < n-1 for all g, a more sophisticated
+    argument involving iterated Davenport applications is needed. -/
 theorem EGZFree.at_most_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
     ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
-  haveI : NeZero n := ⟨by omega⟩
-  -- If s is empty (n = 1, but hn says n > 1, so |s| = 2n-2 ≥ 2)
-  -- Get two elements from s
-  have hne : s ≠ 0 := by intro h; simp [h] at hcard; omega
-  obtain ⟨a, ha⟩ := Multiset.exists_mem_of_ne_zero hne
-  -- Claim: all elements are equal to a
-  -- Proof: every (n-1)-element submultiset of s is zero-sum free
-  -- (otherwise we could pad with elements to get n-element zero-sum)
-  -- By inverse Davenport, zero-sum free of size n-1 → all equal
-  -- So all (n-1)-element submultisets are monochromatic
-  -- This forces s to have at most 2 distinct values
-  --
-  -- More precisely: pick any b ∈ s. We show all elements are a or b.
-  -- If not, ∃ c ∈ s with c ≠ a and c ≠ b.
-  -- Consider (n-1)-element submultiset containing c and some a's.
-  -- It has ≥ 2 values, so by inverse Davenport it's not zero-sum free.
-  -- It has a nonempty zero-sum u of size m ≤ n-1.
-  -- We need to combine with more elements to get n elements summing to 0.
-  -- Use EGZFree.exists_sum_eq: ∃ (n-1) elements of s summing to -0 = 0.
-  -- But that gives n-1 elements summing to 0, which combined with...
-  -- Actually, exists_sum_eq with x = 0 gives n-1 elements summing to 0.
-  -- This n-1 element submultiset is zero-sum free? No, it sums to 0!
-  -- Wait, it's an (n-1)-element submultiset summing to 0.
-  -- That doesn't contradict EGZ-free (which requires SIZE n).
-  -- Let me reconsider...
-  --
-  -- Better approach: use exists_sum_eq to show every (n-1)-submultiset of s
-  -- that is "complementary" has a specific sum. Then use inverse Davenport
-  -- on the complement.
   sorry
 
 /-! ## The Inverse EGZ Theorem -/
