@@ -16,3 +16,4 @@ import Zpnenp.Complexity
 import Zpnenp.Density
 import Zpnenp.CauchyDavenport
 import Zpnenp.InverseEGZ
+import Zpnenp.Freiman
