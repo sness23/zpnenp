@@ -145,9 +145,11 @@ theorem large_achievableSums_of_large_set (p : ℕ) [Fact p.Prime]
     (inst : ModSubsetSumInstance p) (hA : 2 ≤ #inst.elements)
     (hAp : #inst.elements ≤ p / 2) :
     #inst.elements < #(achievableSums inst) := by
-  -- achievableSums includes the sumset A + A (via 2-element subsets)
-  -- and |A + A| > |A| by Cauchy-Davenport
-  sorry -- needs infrastructure connecting powerset sums to sumsets
+  -- achievableSums ⊇ {0} ∪ {a : a ∈ A} ∪ {a + b : {a,b} ⊆ A}
+  -- So |achievableSums| ≥ |A + A| ≥ min(p, 2|A|-1) > |A|
+  -- This requires showing A + A ⊆ achievableSums, which needs
+  -- infrastructure connecting 2-element subset sums to sumsets.
+  sorry
 
 /-! ## The Bourgain-Katz-Tao Regime
 

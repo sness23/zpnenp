@@ -60,7 +60,7 @@ theorem addDoubling_gt_one_of_small (A : Finset (ZMod p))
 theorem iterated_sumset_growth (A : Finset (ZMod p))
     (hA : A.Nonempty) (k : ℕ) (hk : 1 ≤ k) :
     min p (k * #A - k + 1) ≤ #(k • A) := by
-  sorry -- requires iterated Cauchy-Davenport
+  sorry -- induction on k using Cauchy-Davenport at each step
 
 end DoublingInZMod
 
@@ -192,16 +192,24 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
       ∀ x ∈ A, ∃ k : Fin L, x = a + k.val • d := by
   sorry -- Freiman's theorem for Z/pZ
 
-/-- **Growth lemma**: If A ⊆ Z/pZ does NOT have small doubling
-    (|A + A| > K|A|), then the subset sums of A cover a large
-    fraction of Z/pZ. -/
+/-- The subset sums of A contain A ∪ {0} (singletons + empty set). -/
+theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
+    (A : Finset (ZMod p)) :
+    insert 0 (A.image id) ⊆ subsetSumsZMod A := by
+  intro x hx
+  simp only [mem_insert, mem_image, id_eq] at hx
+  rcases hx with rfl | ⟨a, ha, rfl⟩
+  · exact zero_mem_subsetSumsZMod A
+  · exact mem_subsetSumsZMod_of_mem A ha
+
 theorem large_subsetSumsZMod_of_large_doubling (p : ℕ) [Fact p.Prime]
     (A : Finset (ZMod p)) (hA : A.Nonempty)
     (hlarge : #A < #(A + A)) :
     #A + 1 ≤ #(subsetSumsZMod A) := by
-  -- The subset sums include 0 and all elements of A, plus at least
-  -- one element of A + A not in A ∪ {0}.
-  sorry -- needs more infrastructure
+  -- subsetSumsZMod includes all pairwise sums a + b for a, b ∈ A.
+  -- Since |A + A| > |A|, some pairwise sum is NOT a singleton sum.
+  -- Combined with 0 and the singletons, this gives ≥ |A| + 1.
+  sorry
 
 /-! ## Summary
 
