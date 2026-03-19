@@ -1,18 +1,29 @@
 # What's Next: Prioritized Research Directions
 
-## Current State (2026-03-17)
+## Current State (2026-03-18)
 
-**Fully proved (zero sorry)**: 8 of 9 modules
+**Fully proved (zero sorry)**: 9 of 10 modules
 - Davenport constant D(ℤ/nℤ) = n
 - Inverse Davenport theorem (full iff)
-- EGZ connection
+- EGZ connection (using Mathlib's EGZ theorem)
 - Density framework + pigeonhole collision
 - Adversary game + gap analysis
 - Cauchy-Davenport sumset growth
+- Forward direction of Inverse EGZ (sum decomposition proved)
 
-**Partially proved (2 sorry)**: InverseEGZ
-- Forward direction: mostly done (sum decomposition sorry)
-- Backward direction: stated, sorry
+**Partially proved (1 sorry)**: InverseEGZ
+- Forward direction: FULLY PROVED
+- Backward direction: proved modulo `at_most_two_values`
+  - `EGZFree.count_le`: max multiplicity ≤ n-1 ✓
+  - `not_egzFree_of_not_isUnit`: non-unit difference → not EGZ-free ✓
+  - `EGZFree.exists_sum_eq`: for any x, ∃ n-1 elements summing to -x ✓
+  - `EGZFree.at_most_two_values`: EGZ-free of size 2n-2 → ≤ 2 values (SORRY)
+  - Full backward assembly: 2 values → mult n-1 → extremal form → unit ✓
+
+**The sole sorry** (`at_most_two_values`) needs: showing ≥ 3 distinct values
+contradicts EGZ-free. The "shift trick" handles the case when some value has
+multiplicity ≥ n-1. The case all multiplicities ≤ n-2 (only arises for n ≥ 5)
+remains open.
 
 **Published**: On GitHub, paper draft written
 
@@ -20,9 +31,9 @@
 
 ## Priority 1: Finish What's Started
 
-### 1A. Fill InverseEGZ sorry (1-2 hours)
-The sum decomposition `t.sum = j * (a - b)` for a two-valued
-multiset. This is mechanical multiset API work, not mathematics.
+### 1A. Fill InverseEGZ sorry ✅ DONE
+Sum decomposition proved. Forward direction complete.
+Backward direction proved modulo `at_most_two_values`.
 
 ### 1B. Polish paper for submission (1 day)
 Target: ITP 2026 or CPP 2027. The paper has:
