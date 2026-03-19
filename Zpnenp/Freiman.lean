@@ -100,6 +100,22 @@ theorem mem_subsetSumsZMod_of_mem {p : ℕ} (A : Finset (ZMod p)) {a : ZMod p}
   simp only [subsetSumsZMod, mem_image, mem_powerset]
   exact ⟨{a}, singleton_subset_iff.mpr ha, by simp⟩
 
+/-- Pairwise sums of DISTINCT elements are subset sums. -/
+theorem add_mem_subsetSumsZMod_of_ne {p : ℕ} (A : Finset (ZMod p)) {a b : ZMod p}
+    (ha : a ∈ A) (hb : b ∈ A) (hab : a ≠ b) : a + b ∈ subsetSumsZMod A := by
+  simp only [subsetSumsZMod, mem_image, mem_powerset]
+  refine ⟨{a, b}, ?_, ?_⟩
+  · intro x hx; simp at hx; rcases hx with rfl | rfl <;> assumption
+  · simp [Finset.sum_pair hab]
+
+/-- Any subset sum of a subset of A is a subset sum of A. -/
+theorem subsetSumsZMod_mono {p : ℕ} {A B : Finset (ZMod p)} (h : A ⊆ B) :
+    subsetSumsZMod A ⊆ subsetSumsZMod B := by
+  intro x hx
+  simp only [subsetSumsZMod, mem_image, mem_powerset] at hx ⊢
+  obtain ⟨S, hSA, rfl⟩ := hx
+  exact ⟨S, hSA.trans h, rfl⟩
+
 /-- Number of subset sums is at most 2^|A|. -/
 theorem card_subsetSumsZMod_le {p : ℕ} (A : Finset (ZMod p)) :
     #(subsetSumsZMod A) ≤ 2 ^ #A := by
@@ -206,9 +222,9 @@ theorem large_subsetSumsZMod_of_large_doubling (p : ℕ) [Fact p.Prime]
     (A : Finset (ZMod p)) (hA : A.Nonempty)
     (hlarge : #A < #(A + A)) :
     #A + 1 ≤ #(subsetSumsZMod A) := by
-  -- subsetSumsZMod includes all pairwise sums a + b for a, b ∈ A.
-  -- Since |A + A| > |A|, some pairwise sum is NOT a singleton sum.
-  -- Combined with 0 and the singletons, this gives ≥ |A| + 1.
+  -- subsetSumsZMod ⊇ {0} ∪ A (by insert_zero_union_subset)
+  -- Plus distinct-pair sums a + b (by add_mem_subsetSumsZMod_of_ne)
+  -- Since |A + A| > |A|, there exist a, b with a + b ∉ A ∪ {0}
   sorry
 
 /-! ## Summary
