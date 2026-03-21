@@ -14,6 +14,9 @@
 import Zpnenp.SubsetSum
 import Zpnenp.Davenport
 import Zpnenp.Inverse
+import Zpnenp.Freiman
+import Zpnenp.SumProduct
+import Zpnenp.Density
 
 /-! ## The Adversary Game
 
@@ -293,7 +296,39 @@ theorem query_lower_bound_pair :
       l₁.length = n ∧ l₂.length = n ∧
       (∀ j, j < n → j ≠ i → l₁[j]? = l₂[j]?) ∧
       SubsetSum (l₁.toFinset) t ∧ ¬SubsetSum (l₂.toFinset) t := by
-  sorry -- List-level adversary construction (see query_lower_bound_finset for the core argument)
+  intro n hn i hi
+  -- l₁ = list of n zeros with position i set to 1
+  -- l₂ = list of n zeros
+  -- target = 1
+  set l₁ := (List.replicate n (0 : ℤ)).set i 1
+  set l₂ := List.replicate n (0 : ℤ)
+  refine ⟨l₁, l₂, 1, ?_, ?_, ?_, ?_, ?_⟩
+  · -- l₁.length = n
+    simp [l₁, List.length_set]
+  · -- l₂.length = n
+    simp [l₂]
+  · -- agree on all positions except i
+    intro j hj hji
+    simp only [l₁, l₂]
+    simp only [List.getElem?_set']
+    simp [Ne.symm hji]
+  · -- SubsetSum l₁.toFinset 1
+    -- l₁.toFinset contains 1 (at position i), so {1} is a subset summing to 1
+    have h1mem : (1 : ℤ) ∈ l₁.toFinset := by
+      rw [List.mem_toFinset]
+      simp only [l₁]
+      rw [List.mem_iff_getElem]
+      exact ⟨i, by simp [List.length_set]; exact hi, by simp⟩
+    exact ⟨{1}, Finset.mem_powerset.mpr (Finset.singleton_subset_iff.mpr h1mem), by simp⟩
+  · -- ¬SubsetSum l₂.toFinset 1
+    -- l₂.toFinset = {0}
+    have hfin : l₂.toFinset = {0} := by
+      ext x; simp only [l₂, List.mem_toFinset, List.mem_replicate, Finset.mem_singleton]
+      constructor
+      · rintro ⟨_, rfl⟩; rfl
+      · intro h; exact ⟨by omega, h⟩
+    rw [hfin, subsetSum_singleton]
+    push_neg; exact ⟨by omega, by omega⟩
 
 /-- **Ω(n) lower bound** (Finset-level, fully proved):
     The adversary can produce two Finsets differing by one element
