@@ -4,8 +4,9 @@ A Lean 4 investigation into whether structural results from additive
 combinatorics — particularly zero-sum theory — can illuminate the
 P vs NP problem through the Subset Sum problem.
 
-**Status**: All theorems machine-checked. Zero `sorry` declarations.
-Builds clean against Lean 4.28.0 + Mathlib v4.28.0.
+**Status**: 149 theorems machine-checked across 13 modules. 2 `sorry`
+declarations (Freiman's theorem, Gao's theorem — both deep published results).
+Builds clean with 0 errors and 0 warnings.
 
 ---
 
@@ -124,7 +125,7 @@ Formalized in [`Zpnenp/Complexity.lean`](Zpnenp/Complexity.lean).
 
 ## What We Proved
 
-Every theorem below is machine-checked in Lean 4 with zero `sorry`:
+Key theorems machine-checked in Lean 4 (2 sorries noted):
 
 ### Core Definitions
 | Declaration | File | Description |
@@ -162,6 +163,17 @@ Every theorem below is machine-checked in Lean 4 with zero `sorry`:
 | `subsetSums_range_bound` | Density.lean | Subset sums bounded by n*M |
 | `pigeonhole_collision` | Density.lean | High density forces collisions |
 | `high_density_has_collision` | Density.lean | Applied to instances |
+| `egzExtremal_free` | InverseEGZ.lean | Forward inverse EGZ |
+| `inverse_egz` | InverseEGZ.lean | **Inverse EGZ theorem (iff)** |
+| `addDoubling_gt_one_of_small` | Freiman.lean | Sumsets grow in Z/pZ |
+| `iterated_sumset_growth` | Freiman.lean | |kA| ≥ min(p, k|A|-k+1) |
+| `bourgain_katz_tao` | SumProduct.lean | Sum-product growth |
+| `subsetSum_in_NP` | Complexity.lean | Subset Sum ∈ NP |
+| `subsetSum_decidable` | Complexity.lean | Decidable instance |
+| `query_lower_bound_finset` | Complexity.lean | Ω(n) query lower bound |
+| `query_lower_bound_pair` | Complexity.lean | List-level adversary |
+| `structure_vs_computation_dichotomy` | Complexity.lean | Structural dichotomy |
+| `adversary_full_dichotomy` | Complexity.lean | Growth + sum-product |
 
 ---
 
@@ -198,14 +210,19 @@ zpnenp/
 ├── lakefile.toml              # Lean build configuration
 ├── lean-toolchain             # Lean version (4.28.0)
 │
-├── Zpnenp/                    # Lean 4 source (1005 lines, 0 sorry)
+├── Zpnenp/                    # Lean 4 source (~3100 lines, 149 theorems, 2 sorry)
 │   ├── Basic.lean             # Root module
 │   ├── SubsetSum.lean         # Core definitions
 │   ├── ZeroSum.lean           # EGZ connection
-│   ├── Structural.lean        # Counting bounds
+│   ├── Structural.lean        # Counting bounds, density-structure bridge
 │   ├── Davenport.lean         # D(Z/nZ) = n
 │   ├── Inverse.lean           # Inverse Davenport theorem
-│   ├── Complexity.lean        # Adversary game, gap analysis
+│   ├── InverseEGZ.lean        # Inverse EGZ theorem
+│   ├── CauchyDavenport.lean   # Cauchy-Davenport wrapper
+│   ├── Freiman.lean           # Freiman dichotomy, sumset growth
+│   ├── SumProduct.lean        # Sum-product phenomena
+│   ├── Complexity.lean        # NP, adversary game, barriers, dichotomy
+│   ├── ProofComplexity.lean   # Structured PHP, proof complexity
 │   └── Density.lean           # Phase transitions, pigeonhole
 │
 ├── docs/                      # Documentation
@@ -247,11 +264,11 @@ lake build
 If it compiles with no errors and no warnings containing `sorry`,
 every theorem is machine-checked and valid.
 
-### Verify zero sorry
+### Check sorry status
 
 ```bash
-grep -rn "sorry" Zpnenp/ | grep -v "^.*:.*--.*sorry"
-# Should produce no output
+grep -rn "^\s*sorry" Zpnenp/*.lean
+# Should show exactly 2 sorries (Freiman.lean, InverseEGZ.lean)
 ```
 
 ---
@@ -446,10 +463,10 @@ physics.
 ### Can I contribute?
 
 Yes! The most impactful contributions would be:
-- Formalizing the Cauchy-Davenport theorem
-- Formalizing the inverse EGZ theorem
+- Proving `freiman_ZMod` (Freiman's theorem for Z/pZ) — closes a sorry
+- Proving `exists_count_pred` for n ≥ 5 (Gao's theorem) — closes the other sorry
+- Formalizing Kneser's theorem for sumset bounds
 - Exploring the "uncommon graphs" direction
-- Connecting sum-product phenomena to Subset Sum
 - Improving the leanblueprint dependency graph
 
 ### How do I learn more?

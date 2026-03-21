@@ -28,8 +28,8 @@ Both are deep published theorems from additive combinatorics requiring substanti
 
 ### Milestone 1.1: Project Setup
 - [x] Initialize Lean 4 project with Mathlib dependency
-- [ ] Set up leanblueprint
-- [ ] Create initial blueprint LaTeX document with dependency graph
+- [x] Set up leanblueprint (blueprint/src/content.tex + web output)
+- [x] Create initial blueprint LaTeX document with dependency graph
 - [ ] CI pipeline: `lake build` + `leanblueprint all` on push
 
 ### Milestone 1.2: Subset Sum in Lean
@@ -74,10 +74,10 @@ Both are deep published theorems from additive combinatorics requiring substanti
 - [ ] State Kneser's theorem (may already be partially in Mathlib via additive combinatorics modules)
 
 ### Milestone 2.3: Density and Phase Transitions
-- [ ] Define density of a Subset Sum instance: d = n / log₂(max aᵢ)
+- [x] Define density regimes (`isHighDensity`, `isLowDensity`, `isCriticalDensity` in Density.lean)
 - [ ] Formalize the Lagarias-Odlyzko density argument: at low density (d < 1/n), random instances are solvable
-- [ ] State the pigeonhole threshold: at high density (d >> 1), solutions are guaranteed
-- [ ] Characterize the critical density d ≈ 1 regime as the hardness frontier
+- [x] State the pigeonhole threshold: `pigeonhole_collision` and `high_density_has_collision`
+- [x] Characterize the critical density d ≈ 1 regime: `critical_density_nonempty`
 
 ### Milestone 2.4: Freiman's Theorem Connection
 - [x] State Freiman's theorem: `freiman_ZMod` (sorry: deep theorem)
