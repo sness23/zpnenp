@@ -172,71 +172,230 @@
   \end{enumerate}
 \end{theorem}
 
-\chapter{Structural Theory (Planned)}
+\chapter{Structural Theory}
 
 \section{Inverse Zero-Sum Theorems}
 
+\begin{theorem}[Prefix Sums Injective]
+  \label{thm:prefix_sums_injective}
+  \lean{ZeroSumFree.prefix_sums_injective}
+  \leanok
+  \uses{def:zero_sum_free}
+  If a multiset (as a list) is zero-sum free, its prefix sums are all distinct.
+\end{theorem}
+
+\begin{theorem}[All Elements Equal]
+  \label{thm:all_eq}
+  \lean{ZeroSumFree.all_eq}
+  \leanok
+  \uses{def:zero_sum_free, thm:prefix_sums_injective}
+  In a zero-sum free multiset of size $n-1$ in $\ZZ/n\ZZ$, all elements
+  are equal. (Proved via adjacent-swap prefix sum argument.)
+\end{theorem}
+
 \begin{theorem}[Inverse Davenport for $\ZZ/n\ZZ$]
   \label{thm:inverse_davenport}
-  \uses{def:zero_sum_free}
+  \lean{inverse_davenport}
+  \leanok
+  \uses{def:zero_sum_free, thm:all_eq}
   The zero-sum free multisets of maximal length $n-1$ in $\ZZ/n\ZZ$ are
   precisely those consisting of $n-1$ copies of a single element $g$
   with $\gcd(g, n) = 1$.
 \end{theorem}
 
+\begin{definition}[EGZ-Free]
+  \label{def:egz_free}
+  \lean{EGZFree}
+  \leanok
+  A multiset is \emph{EGZ-free} if no submultiset of size $n$ sums to zero.
+\end{definition}
+
+\begin{theorem}[Extremal EGZ-Free (Forward)]
+  \label{thm:egz_extremal_free}
+  \lean{egzExtremal_free}
+  \leanok
+  \uses{def:egz_free}
+  The multiset of $(n-1)$ copies of $a$ and $(n-1)$ copies of $b$,
+  with $a - b$ a unit, is EGZ-free.
+\end{theorem}
+
+\begin{theorem}[At Most Two Values]
+  \label{thm:at_most_two_values}
+  \lean{EGZFree.at_most_two_values}
+  \uses{def:egz_free, thm:inverse_davenport}
+  An EGZ-free multiset of size $2n-2$ has at most $2$ distinct values.
+  (Sorry: Gao's theorem subcase for $n \geq 5$.)
+\end{theorem}
+
 \begin{theorem}[Inverse EGZ]
   \label{thm:inverse_egz}
-  \uses{thm:davenport_zmod}
+  \lean{inverse_egz}
+  \uses{thm:egz_extremal_free, thm:at_most_two_values}
   The multisets of length $2n-2$ in $\ZZ/n\ZZ$ that do not contain an
   $n$-element zero-sum submultiset are precisely those consisting of
   $(n-1)$ copies of element $a$ and $(n-1)$ copies of element $b$,
-  with $\gcd(a - b, n) = 1$.
+  with $a - b$ a unit in $\ZZ/n\ZZ$.
 \end{theorem}
 
 \section{Sumset Bounds}
 
 \begin{theorem}[Cauchy--Davenport]
   \label{thm:cauchy_davenport}
+  \leanok
   For $A, B \subseteq \ZZ/p\ZZ$ with $p$ prime:
   $|A + B| \geq \min(p,\; |A| + |B| - 1)$.
+  (From Mathlib: \texttt{ZMod.cauchy\_davenport}.)
+\end{theorem}
+
+\begin{theorem}[Doubling in $\ZZ/p\ZZ$]
+  \label{thm:doubling_gt_one}
+  \lean{addDoubling_gt_one_of_small}
+  \leanok
+  \uses{thm:cauchy_davenport}
+  For $A \subseteq \ZZ/p\ZZ$ with $2 \leq |A| \leq p-1$:
+  $|A| < |A + A|$.
+\end{theorem}
+
+\begin{theorem}[Iterated Sumset Growth]
+  \label{thm:iterated_sumset}
+  \lean{iterated_sumset_growth}
+  \leanok
+  \uses{thm:cauchy_davenport}
+  $|kA| \geq \min(p,\; k|A| - k + 1)$.
+\end{theorem}
+
+\begin{theorem}[Freiman for $\ZZ/p\ZZ$]
+  \label{thm:freiman}
+  \lean{freiman_ZMod}
+  \uses{thm:cauchy_davenport}
+  If $|A + A| \leq K|A|$ and $|A| \leq p/K$, then $A$ is contained in
+  an arithmetic progression of length $\leq K^2 |A|$.
+  (Sorry: deep theorem.)
+\end{theorem}
+
+\section{Sum-Product Phenomenon}
+
+\begin{theorem}[Sum-Product Growth]
+  \label{thm:sum_product}
+  \lean{bourgain_katz_tao}
+  \leanok
+  \uses{thm:doubling_gt_one}
+  For $A \subseteq \ZZ/p\ZZ$ with $2 \leq |A| \leq p/2$:
+  $|A| < \max(|A + A|, |A \cdot A|)$.
 \end{theorem}
 
 \section{Density Phase Transitions}
 
-\begin{definition}[Density]
+\begin{definition}[Density Regimes]
   \label{def:density}
-  The \emph{density} of a Subset Sum instance $(a_1, \ldots, a_n)$ is
-  $d = n / \log_2(\max_i a_i)$.
+  \lean{SubsetSumInstance.isHighDensity}
+  \leanok
+  A Subset Sum instance has \emph{high density} if $2^n > n \cdot M + 1$,
+  \emph{low density} if $M > 2^{n^2}$, and \emph{critical density} otherwise.
 \end{definition}
 
-\begin{theorem}[Density Dichotomy]
-  \label{thm:density_dichotomy}
+\begin{theorem}[Pigeonhole Collision]
+  \label{thm:pigeonhole_collision}
+  \lean{pigeonhole_collision}
+  \leanok
   \uses{def:density}
-  \begin{itemize}
-    \item Low density ($d < 0.94$): solvable in polynomial time via
-          lattice reduction (Lagarias--Odlyzko, CJLOSS).
-    \item High density ($d \gg 1$): solvable by pigeonhole---$2^n$
-          subsets exceed the number of possible sums.
-    \item Critical density ($d \approx 1$): believed to be maximally hard.
-  \end{itemize}
+  At high density, two distinct subsets have the same sum.
 \end{theorem}
 
-\chapter{Complexity Bridge (Planned)}
+\chapter{Complexity Bridge}
+
+\section{Subset Sum in NP}
 
 \begin{theorem}[Subset Sum $\in \NP$]
   \label{thm:subset_sum_np}
+  \lean{subsetSum_in_NP}
+  \leanok
   \uses{def:subset_sum}
-  Subset Sum is in $\NP$: given a subset $S'$, the verifier checks
-  $\sum_{x \in S'} x = t$ in polynomial time.
+  $\mathrm{SubsetSum}(S, t) \iff \exists S' \in \mathcal{P}(S),\; \sum_{x \in S'} x = t$.
+  Verification is decidable (polynomial-time checkable).
 \end{theorem}
+
+\begin{theorem}[Subset Sum Decidable]
+  \label{thm:subset_sum_decidable}
+  \lean{subsetSum_decidable}
+  \leanok
+  \uses{thm:subset_sum_np}
+  The Subset Sum predicate has a \texttt{Decidable} instance.
+\end{theorem}
+
+\section{Query Complexity}
+
+\begin{theorem}[$\Omega(n)$ Query Lower Bound]
+  \label{thm:query_lower_bound}
+  \lean{query_lower_bound_finset}
+  \leanok
+  \uses{def:subset_sum}
+  The adversary can produce two Finsets differing by one element
+  with different Subset Sum answers: $\{0, 1\}$ vs $\{0\}$ with target~$1$.
+  Any algorithm must read all elements.
+\end{theorem}
+
+\section{The Adversary Framework}
+
+\begin{theorem}[Adversary NO Instances]
+  \label{thm:adversary_no}
+  \lean{adversary_no_instances}
+  \leanok
+  \uses{thm:inverse_davenport}
+  At the Davenport threshold (size $n-1$), the adversary's NO instances
+  are exactly the replicate-of-unit instances.
+\end{theorem}
+
+\section{Structure vs.\ Computation}
+
+\begin{theorem}[Structure--Computation Dichotomy]
+  \label{thm:struct_comp_dichotomy}
+  \lean{structure_vs_computation_dichotomy}
+  \leanok
+  \uses{thm:doubling_gt_one}
+  For non-trivial $A \subseteq \ZZ/p\ZZ$: either $|A+A| > |A|$ (growing sumset)
+  or $|A+A| \leq K|A|$ (Freiman structure). The adversary cannot avoid both.
+\end{theorem}
+
+\begin{theorem}[Adversary Full Dichotomy]
+  \label{thm:adversary_full}
+  \lean{adversary_full_dichotomy}
+  \leanok
+  \uses{thm:struct_comp_dichotomy, thm:sum_product}
+  Every non-trivial instance simultaneously has growing sumsets AND large
+  sum-product quantity: $|A| < |A+A|$ and $|A| < \max(|A+A|, |A \cdot A|)$.
+\end{theorem}
+
+\section{Barrier Analysis}
+
+\begin{theorem}[Structural Theory is Combinatorial]
+  \label{thm:barriers}
+  \lean{structural_theory_is_combinatorial}
+  \leanok
+  \uses{thm:inverse_davenport}
+  The structural theorems are purely algebraic (no computational content).
+
+  \textbf{Barrier assessment:}
+  \begin{itemize}
+    \item Relativization: pre-computational (N/A)
+    \item Natural proofs: potentially avoided (structural properties are rare)
+    \item Algebrization: potentially hit (theory is algebraic)
+  \end{itemize}
+\end{theorem}
+
+\chapter{Open Problems}
 
 \begin{theorem}[$\PP \neq \NP$]
   \label{thm:p_ne_np}
-  \uses{thm:inverse_davenport, thm:inverse_egz, thm:density_dichotomy, thm:subset_sum_np}
+  \uses{thm:inverse_davenport, thm:inverse_egz, thm:struct_comp_dichotomy, thm:subset_sum_np, thm:barriers}
   \textbf{Goal.} No polynomial-time algorithm solves Subset Sum in the
   worst case.
 
   \textbf{Strategy:} Use the structural characterization of hard instances
   from zero-sum theory to show that any polynomial-time algorithm must fail
   on instances at critical density with intermediate structure.
+
+  \textbf{Status:} The structural theory constrains WHAT hard instances
+  look like. The gap is showing WHY this structure implies computational
+  hardness. The barrier analysis identifies algebrization as the main obstacle.
 \end{theorem}

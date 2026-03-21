@@ -13,9 +13,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \): Sumset Bounds</title>
-<link rel="next" href="sect0008.html" title="Density Phase Transitions" />
+<link rel="next" href="sect0008.html" title="Sum-Product Phenomenon" />
 <link rel="prev" href="sect0006.html" title="Inverse Zero-Sum Theorems" />
-<link rel="up" href="sect0005.html" title="Structural Theory (Planned)" />
+<link rel="up" href="sect0005.html" title="Structural Theory" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 </head>
@@ -46,7 +46,7 @@
   </ul>
  </li>
 <li class=" active">
-  <a href="sect0005.html"><span class="toc_ref">2</span> <span class="toc_entry">Structural Theory (Planned)</span></a>
+  <a href="sect0005.html"><span class="toc_ref">2</span> <span class="toc_entry">Structural Theory</span></a>
   <span class="expand-toc">▼</span>
   <ul class="sub-toc-1 active">
      <li class="">
@@ -56,13 +56,38 @@
   <a href="sect0007.html"><span class="toc_ref">2.2</span> <span class="toc_entry">Sumset Bounds</span></a>
  </li>
 <li class="">
-  <a href="sect0008.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Density Phase Transitions</span></a>
+  <a href="sect0008.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Sum-Product Phenomenon</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Density Phase Transitions</span></a>
  </li>
 
   </ul>
  </li>
 <li class="">
-  <a href="sect0009.html"><span class="toc_ref">3</span> <span class="toc_entry">Complexity Bridge (Planned)</span></a>
+  <a href="sect0010.html"><span class="toc_ref">3</span> <span class="toc_entry">Complexity Bridge</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0011.html"><span class="toc_ref">3.1</span> <span class="toc_entry">Subset Sum in NP</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">3.2</span> <span class="toc_entry">Query Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Adversary Framework</span></a>
+ </li>
+<li class="">
+  <a href="sect0014.html"><span class="toc_ref">3.4</span> <span class="toc_entry">Structure vs. Computation</span></a>
+ </li>
+<li class="">
+  <a href="sect0015.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Barrier Analysis</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0016.html"><span class="toc_ref">4</span> <span class="toc_entry">Open Problems</span></a>
  </li>
 </ul>
 </nav>
@@ -82,7 +107,46 @@
     <span class="theorem_thmtitle">Cauchy–Davenport</span>
   </div>
   <div class="theorem_thmcontent">
-  <p>  For \(A, B \subseteq \ZZ /p\ZZ \) with \(p\) prime: \(|A + B| \geq \min (p,\;  |A| + |B| - 1)\). </p>
+  <p>  For \(A, B \subseteq \ZZ /p\ZZ \) with \(p\) prime: \(|A + B| \geq \min (p,\;  |A| + |B| - 1)\). (From Mathlib: <span class="ttfamily">ZMod.cauchy_davenport</span>.) </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:doubling_gt_one">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">2.2.2</span>
+    <span class="theorem_thmtitle">Doubling in \(\ZZ /p\ZZ \)</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  addDoubling_gt_one_of_small thm:cauchy_davenport For \(A \subseteq \ZZ /p\ZZ \) with \(2 \leq |A| \leq p-1\): \(|A| {\lt} |A + A|\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:iterated_sumset">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">2.2.3</span>
+    <span class="theorem_thmtitle">Iterated Sumset Growth</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  iterated_sumset_growth thm:cauchy_davenport \(|kA| \geq \min (p,\;  k|A| - k + 1)\). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:freiman">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">2.2.4</span>
+    <span class="theorem_thmtitle">Freiman for \(\ZZ /p\ZZ \)</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  freiman_ZMod thm:cauchy_davenport If \(|A + A| \leq K|A|\) and \(|A| \leq p/K\), then \(A\) is contained in an arithmetic progression of length \(\leq K^2 |A|\). (Sorry: deep theorem.) </p>
 
   </div>
 </div>
@@ -95,9 +159,9 @@
 <nav class="prev_up_next">
   <a href="sect0006.html" title="Inverse Zero-Sum Theorems"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
-  <a href="sect0005.html" title="Structural Theory (Planned)"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+  <a href="sect0005.html" title="Structural Theory"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
 </a>
-  <a href="sect0008.html" title="Density Phase Transitions"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="sect0008.html" title="Sum-Product Phenomenon"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

@@ -12,10 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \): Density Phase Transitions</title>
-<link rel="next" href="sect0010.html" title="Complexity Bridge" />
-<link rel="prev" href="sect0008.html" title="Sum-Product Phenomenon" />
-<link rel="up" href="sect0005.html" title="Structural Theory" />
+<title>Zero-Sum Problems, Extremal Set Theory, and \(\PP \neq \NP \): Subset Sum in NP</title>
+<link rel="next" href="sect0012.html" title="Query Complexity" />
+<link rel="prev" href="sect0010.html" title="Complexity Bridge" />
+<link rel="up" href="sect0010.html" title="Complexity Bridge" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 </head>
@@ -45,10 +45,10 @@
 
   </ul>
  </li>
-<li class=" active">
+<li class="">
   <a href="sect0005.html"><span class="toc_ref">2</span> <span class="toc_entry">Structural Theory</span></a>
-  <span class="expand-toc">▼</span>
-  <ul class="sub-toc-1 active">
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
      <li class="">
   <a href="sect0006.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Inverse Zero-Sum Theorems</span></a>
  </li>
@@ -58,17 +58,17 @@
 <li class="">
   <a href="sect0008.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Sum-Product Phenomenon</span></a>
  </li>
-<li class=" active current">
+<li class="">
   <a href="sect0009.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Density Phase Transitions</span></a>
  </li>
 
   </ul>
  </li>
-<li class="">
+<li class=" active">
   <a href="sect0010.html"><span class="toc_ref">3</span> <span class="toc_entry">Complexity Bridge</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
-     <li class="">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class=" active current">
   <a href="sect0011.html"><span class="toc_ref">3.1</span> <span class="toc_entry">Subset Sum in NP</span></a>
  </li>
 <li class="">
@@ -97,30 +97,30 @@
 
 
 <div class="main-text">
-<h1 id="a0000000010">2.4 Density Phase Transitions</h1>
-<div class="definition_thmwrapper theorem-style-plain" id="def:density">
-  <div class="definition_thmheading">
-    <span class="definition_thmcaption">
-    Definition
-    </span>
-    <span class="definition_thmlabel">2.4.1</span>
-    <span class="definition_thmtitle">Density Regimes</span>
-  </div>
-  <div class="definition_thmcontent">
-  <p>  SubsetSumInstance.isHighDensity A Subset Sum instance has <em>high density</em> if \(2^n {\gt} n \cdot M + 1\), <em>low density</em> if \(M {\gt} 2^{n^2}\), and <em>critical density</em> otherwise. </p>
-
-  </div>
-</div>
-<div class="theorem_thmwrapper theorem-style-plain" id="thm:pigeonhole_collision">
+<h1 id="a0000000012">3.1 Subset Sum in NP</h1>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:subset_sum_np">
   <div class="theorem_thmheading">
     <span class="theorem_thmcaption">
     Theorem
     </span>
-    <span class="theorem_thmlabel">2.4.2</span>
-    <span class="theorem_thmtitle">Pigeonhole Collision</span>
+    <span class="theorem_thmlabel">3.1.1</span>
+    <span class="theorem_thmtitle">Subset Sum \(\in \NP \)</span>
   </div>
   <div class="theorem_thmcontent">
-  <p>  pigeonhole_collision def:density At high density, two distinct subsets have the same sum. </p>
+  <p>  subsetSum_in_NP def:subset_sum \(\mathrm{SubsetSum}(S, t) \iff \exists S' \in \mathcal{P}(S),\;  \sum _{x \in S'} x = t\). Verification is decidable (polynomial-time checkable). </p>
+
+  </div>
+</div>
+<div class="theorem_thmwrapper theorem-style-plain" id="thm:subset_sum_decidable">
+  <div class="theorem_thmheading">
+    <span class="theorem_thmcaption">
+    Theorem
+    </span>
+    <span class="theorem_thmlabel">3.1.2</span>
+    <span class="theorem_thmtitle">Subset Sum Decidable</span>
+  </div>
+  <div class="theorem_thmcontent">
+  <p>  subsetSum_decidable thm:subset_sum_np The Subset Sum predicate has a <span class="ttfamily">Decidable</span> instance. </p>
 
   </div>
 </div>
@@ -131,11 +131,11 @@
 </div> <!-- wrapper -->
 
 <nav class="prev_up_next">
-  <a href="sect0008.html" title="Sum-Product Phenomenon"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+  <a href="sect0010.html" title="Complexity Bridge"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
-  <a href="sect0005.html" title="Structural Theory"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+  <a href="sect0010.html" title="Complexity Bridge"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
 </a>
-  <a href="sect0010.html" title="Complexity Bridge"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="sect0012.html" title="Query Complexity"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 
