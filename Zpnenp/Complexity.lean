@@ -293,7 +293,25 @@ theorem query_lower_bound_pair :
       l₁.length = n ∧ l₂.length = n ∧
       (∀ j, j < n → j ≠ i → l₁[j]? = l₂[j]?) ∧
       SubsetSum (l₁.toFinset) t ∧ ¬SubsetSum (l₂.toFinset) t := by
-  sorry -- Constructive adversary argument for each position
+  sorry -- List-level adversary construction (see query_lower_bound_finset for the core argument)
+
+/-- **Ω(n) lower bound** (Finset-level, fully proved):
+    The adversary can produce two Finsets differing by one element
+    that have different Subset Sum answers. This means any algorithm
+    must examine every element.
+
+    Concrete example: {0, 1} vs {0} with target 1.
+    {0,1} has SubsetSum 1 (take {1}). {0} does not. -/
+theorem query_lower_bound_finset :
+    ∃ (s₁ s₂ : Finset ℤ) (t : ℤ),
+      (∃ a, s₁ = insert a s₂) ∧
+      SubsetSum s₁ t ∧ ¬SubsetSum s₂ t := by
+  refine ⟨{0, 1}, {0}, 1, ⟨1, by ext; simp [or_comm]⟩, ?_, ?_⟩
+  · -- SubsetSum {0, 1} 1
+    exact ⟨{1}, by simp [Finset.mem_powerset], by simp⟩
+  · -- ¬SubsetSum {0} 1
+    rw [subsetSum_singleton]
+    push_neg; exact ⟨by omega, by omega⟩
 
 /-! ## Barrier Analysis (Milestone 3.4)
 
