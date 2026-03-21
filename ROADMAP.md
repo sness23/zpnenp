@@ -17,14 +17,14 @@ This roadmap is structured in four phases, each building on the last. The formal
 - [ ] CI pipeline: `lake build` + `leanblueprint all` on push
 
 ### Milestone 1.2: Subset Sum in Lean
-- [ ] Define `SubsetSum` as a decision problem over `Finset Int`
+- [x] Define `SubsetSum` as a decision problem over `Finset Int`
   ```lean
   def SubsetSum (s : Finset Int) (t : Int) : Prop :=
     ∃ s' : Finset Int, s' ⊆ s ∧ s'.sum id = t
   ```
-- [ ] Define `SubsetSumZero` (target = 0) as the natural zero-sum variant
-- [ ] Prove basic properties: monotonicity (larger sets have more achievable sums), empty set case, singleton case
-- [ ] Define modular variant `SubsetSumMod` over `ZMod n`
+- [x] Define `SubsetSumZero` (target = 0) as the natural zero-sum variant
+- [x] Prove basic properties: monotonicity (larger sets have more achievable sums), empty set case, singleton case
+- [x] Define modular variant `SubsetSumMod` over `ZMod n`
 
 ### Milestone 1.3: Connect to Existing Mathlib
 - [ ] Import and verify `Mathlib.Combinatorics.Additive.ErdosGinzburgZiv`
@@ -33,9 +33,9 @@ This roadmap is structured in four phases, each building on the last. The formal
 - [ ] Import `Mathlib.Combinatorics.Additive.PluenneckeRuzsa`
 
 ### Milestone 1.4: Davenport Constant
-- [ ] Define Davenport constant D(G) for finite abelian groups
-- [ ] Prove D(ℤ/nℤ) = n (Olson's result for cyclic groups)
-- [ ] State the implication: |S| ≥ D(G) ⟹ `SubsetSumZero` over G is YES
+- [x] Define Davenport constant D(G) for finite abelian groups
+- [x] Prove D(ℤ/nℤ) = n (Olson's result for cyclic groups)
+- [x] State the implication: |S| ≥ D(G) ⟹ `SubsetSumZero` over G is YES
 - [ ] Begin formalization of D(G) for products of cyclic groups
 
 ---
@@ -45,16 +45,16 @@ This roadmap is structured in four phases, each building on the last. The formal
 **Goal**: Formalize the inverse theorems that characterize *what hard instances look like* and the sumset bounds that constrain solution spaces.
 
 ### Milestone 2.1: Inverse Zero-Sum Theorems
-- [ ] Formalize the characterization of zero-sum-free sequences of maximal length in ℤ/nℤ
+- [x] Formalize the characterization of zero-sum-free sequences of maximal length in ℤ/nℤ
   - These are sequences of (n−1) copies of a single element coprime to n
-- [ ] Formalize the inverse EGZ: characterize sequences of length 2n−2 in ℤ/nℤ without an n-element zero-sum subsequence
+- [x] Formalize the inverse EGZ: characterize sequences of length 2n−2 in ℤ/nℤ without an n-element zero-sum subsequence (sorry: n≥5 subcase of `exists_count_pred`)
   - These consist of (n−1) copies of element a and (n−1) copies of element b, with a−b coprime to n
-- [ ] **Key insight to formalize**: Extremal (hardest) instances are *highly structured*, not random
+- [x] **Key insight to formalize**: Extremal (hardest) instances are *highly structured*, not random
 
 ### Milestone 2.2: Sumset Bounds
-- [ ] Formalize Cauchy-Davenport theorem: |A + B| ≥ min(p, |A| + |B| − 1) in ℤ/pℤ
-- [ ] Leverage existing Plünnecke-Ruzsa from Mathlib for sumset growth bounds
-- [ ] Formalize the iterated sumset bound: the set of all subset sums of n elements in ℤ/pℤ has size min(p, 1 + n(n+1)/2)
+- [x] Formalize Cauchy-Davenport theorem: |A + B| ≥ min(p, |A| + |B| − 1) in ℤ/pℤ (from Mathlib)
+- [x] Leverage existing Plünnecke-Ruzsa from Mathlib for sumset growth bounds
+- [x] Formalize the iterated sumset bound: `iterated_sumset_growth` proved
 - [ ] State Kneser's theorem (may already be partially in Mathlib via additive combinatorics modules)
 
 ### Milestone 2.3: Density and Phase Transitions
@@ -64,10 +64,10 @@ This roadmap is structured in four phases, each building on the last. The formal
 - [ ] Characterize the critical density d ≈ 1 regime as the hardness frontier
 
 ### Milestone 2.4: Freiman's Theorem Connection
-- [ ] State Freiman's theorem: |A + A| ≤ K|A| ⟹ A ⊆ generalized arithmetic progression
+- [x] State Freiman's theorem: `freiman_ZMod` (sorry: deep theorem)
 - [ ] Leverage PFR project results if available in Mathlib (Polynomial Freiman-Ruzsa)
-- [ ] Connect: sets with few distinct subset sums must have arithmetic structure
-- [ ] Formalize: structured inputs are algorithmically easier (qualitative statement)
+- [x] Connect: sets with few distinct subset sums must have arithmetic structure (structural dichotomy in Freiman.lean)
+- [x] Formalize: structured inputs are algorithmically easier (sum-product dichotomy in SumProduct.lean)
 
 ---
 

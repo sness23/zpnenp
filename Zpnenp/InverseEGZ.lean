@@ -526,7 +526,13 @@ private theorem exists_count_pred {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
           have := Multiset.card_le_card hle_univ
           simp [Finset.card_univ, ZMod.card] at this
           omega
-      · -- n ≥ 5: the deep structural subcase
+      · -- n ≥ 5: the deep structural subcase (Gao's theorem territory)
+        -- All elements have count ≤ n-3, with 2n-2 elements in ZMod n.
+        -- Need to show this multiset has an n-element zero-sum.
+        -- This requires iterated applications of the Davenport constant
+        -- or the Erdős-Ginzburg-Ziv theorem in a more refined way.
+        -- Known to follow from Gao (1996) but requires substantial
+        -- additional infrastructure.
         push_neg at hn4
         sorry
 
