@@ -644,6 +644,17 @@ theorem adversary_full_dichotomy (A : Finset (ZMod p))
 theorem critical_density_nonempty :
     ∃ inst : SubsetSumInstance,
       inst.isCriticalDensity := by
-  sorry -- Requires careful computation of Finset.sup for the concrete instance
+  -- Concrete example: weights = {2}, n = 1, maxWeight = 2, target = 1
+  -- High density: 1 * 2 + 1 = 3, 2^1 = 2, ¬(3 < 2) ✓
+  -- Low density: 2^(1²) = 2, ¬(2 < 2) ✓
+  refine ⟨⟨{2}, by simp, 1⟩, ?_, ?_⟩
+  · -- ¬isHighDensity
+    simp only [SubsetSumInstance.isHighDensity, SubsetSumInstance.n,
+      SubsetSumInstance.maxWeight, Finset.card_singleton, Finset.sup_singleton, id]
+    omega
+  · -- ¬isLowDensity
+    simp only [SubsetSumInstance.isLowDensity, SubsetSumInstance.n,
+      SubsetSumInstance.maxWeight, Finset.card_singleton, Finset.sup_singleton, id]
+    omega
 
 end HardCore
