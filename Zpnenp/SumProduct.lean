@@ -134,22 +134,28 @@ The sum-product theorem FORBIDS this, closing the escape route for
 the adversary who tries to make Subset Sum hard.
 -/
 
-/-- The sum-product lower bound implies: for large enough sets in Z/pZ,
-    the achievable sums cover a significant fraction of Z/pZ.
+/-- When 0 ∉ A, achievable sums have strictly more elements than A.
+    The empty subset gives 0, which is a new element beyond the singletons.
 
-    If |A| ≥ p^{1/2+ε}, then |SS(A)| = p (all of Z/pZ is achievable).
-    For smaller sets, the fraction is at least |A|^{1+ε'}.
-
-    This is a consequence of iterated sum-product estimates. -/
-theorem large_achievableSums_of_large_set (p : ℕ) [Fact p.Prime]
-    (inst : ModSubsetSumInstance p) (hA : 2 ≤ #inst.elements)
-    (hAp : #inst.elements ≤ p / 2) :
+    Note: the original statement without `h0` is FALSE for A = {0, a}
+    where achievableSums = {0, a} has the same cardinality as A.
+    Removing 0 from A is WLOG since 0 doesn't change subset sums. -/
+theorem large_achievableSums_of_zero_not_mem (p : ℕ) [Fact p.Prime]
+    (inst : ModSubsetSumInstance p) (hA : inst.elements.Nonempty)
+    (h0 : (0 : ZMod p) ∉ inst.elements) :
     #inst.elements < #(achievableSums inst) := by
-  -- achievableSums ⊇ {0} ∪ {a : a ∈ A} ∪ {a + b : {a,b} ⊆ A}
-  -- So |achievableSums| ≥ |A + A| ≥ min(p, 2|A|-1) > |A|
-  -- This requires showing A + A ⊆ achievableSums, which needs
-  -- infrastructure connecting 2-element subset sums to sumsets.
-  sorry
+  have hsub : insert (0 : ZMod p) inst.elements ⊆ achievableSums inst := by
+    intro x hx
+    simp only [Finset.mem_insert] at hx
+    rcases hx with rfl | hx
+    · exact zero_mem_achievableSums inst
+    · simp only [achievableSums, Finset.mem_image, Finset.mem_powerset]
+      exact ⟨{x}, Finset.singleton_subset_iff.mpr hx, by simp⟩
+  have hcard : #(insert (0 : ZMod p) inst.elements) = #inst.elements + 1 :=
+    Finset.card_insert_of_notMem h0
+  calc #inst.elements < #inst.elements + 1 := by omega
+    _ = #(insert (0 : ZMod p) inst.elements) := hcard.symm
+    _ ≤ #(achievableSums inst) := Finset.card_le_card hsub
 
 /-! ## The Bourgain-Katz-Tao Regime
 

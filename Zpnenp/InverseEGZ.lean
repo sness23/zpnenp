@@ -226,9 +226,11 @@ theorem EGZFree.exists_sum_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     exfalso
     exact hfree t ((Multiset.le_cons_of_notMem hx).mp htles) htcard htsum
 
-/-- **Key Lemma**: An EGZ-free multiset of size 2n-2 has at most 2 distinct values.
+/-! ## Key Lemma: At most 2 distinct values
 
-    **Proof sketch** (not yet fully formalized):
+**Key Lemma**: An EGZ-free multiset of size 2n-2 has at most 2 distinct values.
+
+**Proof sketch**:
 
     Suppose s has ≥ 3 distinct values. We derive a contradiction with EGZ-free.
 
@@ -262,11 +264,277 @@ theorem EGZFree.exists_sum_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
 
     The remaining open case is when ALL values appear ≤ n-3 times (requires n ≥ 5).
     For n ≤ 4, the pigeonhole principle forces some value to have count ≥ n-2. -/
+
+/-- Given d with count n-1 in an EGZ-free multiset, the remaining elements
+    form a constant multiset. This gives exactly 2 values. -/
+private theorem two_values_of_count_pred {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hfree : EGZFree s) (hcard : s.card = 2 * n - 2)
+    {d : ZMod n} (hd_count : Multiset.count d s = n - 1) :
+    ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
+  haveI : NeZero n := ⟨by omega⟩
+  have hd_le : Multiset.replicate (n - 1) d ≤ s :=
+    Multiset.le_count_iff_replicate_le.mp (by omega)
+  set R := s - Multiset.replicate (n - 1) d with hR_def
+  have hR_add : s = Multiset.replicate (n - 1) d + R := by
+    rw [hR_def, add_comm]; exact (Multiset.sub_add_cancel hd_le).symm
+  have hR_card : R.card = n - 1 := by
+    have := congr_arg Multiset.card hR_add
+    simp [Multiset.card_add, Multiset.card_replicate] at this; omega
+  have hR_no_d : Multiset.count d R = 0 := by
+    have h := congr_arg (Multiset.count d) hR_add
+    simp [Multiset.count_add, Multiset.count_replicate] at h; omega
+  -- R.map (· - d) is zero-sum free
+  -- (If not, the zero-sum preimage + copies of d forms n-element zero-sum in s)
+  have hR'_zsf : ZeroSumFree (R.map (· - d)) := by
+    intro v hv hv_ne hv_sum
+    -- v ≤ R.map (·-d), v nonempty, v.sum = 0
+    have hv_card_pos : 0 < v.card := by
+      rwa [Multiset.card_pos, ← Multiset.empty_eq_zero]
+    -- All elements of R.map (·-d) are nonzero (since R has no d's)
+    have hno_zero : ∀ x ∈ R.map (· - d), x ≠ (0 : ZMod n) := by
+      intro x hx hx0; subst hx0
+      rw [Multiset.mem_map] at hx
+      obtain ⟨y, hy, hyd⟩ := hx
+      have : y = d := by rwa [sub_eq_zero] at hyd
+      subst this
+      exact absurd (Multiset.count_pos.mpr hy) (by rw [hR_no_d]; omega)
+    -- v.card ≥ 2 (single nonzero element can't sum to 0)
+    have hv_ge2 : 2 ≤ v.card := by
+      by_contra hlt; push_neg at hlt
+      have : v.card = 1 := by omega
+      obtain ⟨x, rfl⟩ := Multiset.card_eq_one.mp this
+      simp only [Multiset.sum_singleton] at hv_sum
+      exact hno_zero x (Multiset.mem_of_le hv (Multiset.mem_singleton_self x)) hv_sum
+    -- Preimage u = v.map (·+d) satisfies u ≤ R
+    set u := v.map (· + d)
+    have hu_le_R : u ≤ R := by
+      -- v ≤ R.map (·-d), so v.map (·+d) ≤ R.map (·-d).map (·+d) = R
+      have hinv : (R.map (· - d)).map (· + d) = R := by
+        rw [Multiset.map_map]; simp [Function.comp]
+      rw [show u = v.map (· + d) from rfl, ← hinv]
+      exact Multiset.map_le_map hv
+    have hu_card : u.card = v.card := Multiset.card_map _ _
+    -- u.sum = v.card • d (since v.sum = 0 and each element shifted by +d)
+    have hu_sum : u.sum = v.card • d := by
+      suffices hsuff : ∀ (w : Multiset (ZMod n)),
+          (w.map (· + d)).sum = w.sum + w.card • d by
+        rw [show u = v.map (· + d) from rfl, hsuff, hv_sum, zero_add]
+      intro w
+      induction w using Multiset.induction with
+      | empty => simp
+      | cons a t ih =>
+        simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.card_cons, succ_nsmul]
+        rw [ih]; ring
+    -- Construct n-element zero-sum: u + replicate(n - v.card, d)
+    have hle_card : v.card ≤ (R.map (· - d)).card := Multiset.card_le_card hv
+    rw [Multiset.card_map, hR_card] at hle_card
+    have hcomb_le : u + Multiset.replicate (n - v.card) d ≤ s := by
+      rw [hR_add, add_comm u]
+      exact add_le_add
+        (Multiset.le_count_iff_replicate_le.mp (by simp; omega)) hu_le_R
+    have hcomb_card : (u + Multiset.replicate (n - v.card) d).card = n := by
+      rw [Multiset.card_add, hu_card, Multiset.card_replicate]; omega
+    have hcomb_sum : (u + Multiset.replicate (n - v.card) d).sum = 0 := by
+      rw [Multiset.sum_add, hu_sum, multiset_sum_replicate, ← add_nsmul,
+          show v.card + (n - v.card) = n from by omega,
+          nsmul_eq_mul, ZMod.natCast_self, zero_mul]
+    exact hfree _ hcomb_le hcomb_card hcomb_sum
+  -- By inverse_davenport: R.map (·-d) = replicate(n-1, h) for unit h
+  have hR'_card : (R.map (· - d)).card = n - 1 := by
+    rw [Multiset.card_map]; exact hR_card
+  obtain ⟨h, _, hR'_eq⟩ := (inverse_davenport n hn _ hR'_card).mp hR'_zsf
+  -- R = replicate(n-1, d + h): recover from the shifted form
+  have hR_eq : R = Multiset.replicate (n - 1) (d + h) := by
+    have hinj : Function.Injective (· - d : ZMod n → ZMod n) := sub_left_injective
+    ext x
+    rw [← Multiset.count_map_eq_count' _ _ hinj x]
+    rw [hR'_eq, Multiset.count_replicate, Multiset.count_replicate]
+    split_ifs with h1 h2 h2 <;> [rfl; exfalso; exfalso; rfl]
+    · exact h2 (by simp [h1])
+    · exact h1 (by rw [← h2]; ring)
+  -- Every element of s is d or d + h
+  refine ⟨d, d + h, fun x hx => ?_⟩
+  rw [hR_add, hR_eq, Multiset.mem_add] at hx
+  rcases hx with hx | hx
+  · left; exact Multiset.eq_of_mem_replicate hx
+  · right; exact Multiset.eq_of_mem_replicate hx
+
+/-- **Structural claim**: In an EGZ-free multiset of size 2n-2, some element
+    appears exactly n-1 times.
+
+    For any a ∈ s, applying `exists_sum_eq` gives complement R with no copies
+    of a. If R is constant (1 value), that value has count n-1. Otherwise,
+    the complement's shift has a zero-sum, leading to contradiction when
+    count(a, s) ≥ n-2 (which holds for n ≤ 4 by pigeonhole, and for the
+    max-count element when max count ≥ n-2). -/
+private theorem exists_count_pred {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
+    ∃ d, Multiset.count d s = n - 1 := by
+  haveI : NeZero n := ⟨by omega⟩
+  -- Pick element a with maximum count
+  have hs_ne : s ≠ 0 := by intro h; simp [h] at hcard; omega
+  obtain ⟨a, ha_max⟩ := Finite.exists_max (fun x : ZMod n => Multiset.count x s)
+  have ha : a ∈ s := by
+    rw [← Multiset.count_pos]; by_contra h; push_neg at h
+    have : ∀ x, Multiset.count x s = 0 := fun x => Nat.le_zero.mp ((ha_max x).trans (by omega))
+    have : s.card = 0 := by
+      rw [Multiset.card_eq_zero]; ext x
+      simp [Multiset.count_zero, Nat.le_zero.mp ((ha_max x).trans (by omega))]
+    omega
+  -- Apply exists_sum_eq to get t ≤ s with |t| = n-1, t.sum = -a
+  obtain ⟨t, ht_le, ht_card, ht_sum⟩ := EGZFree.exists_sum_eq hn hfree hcard a
+  set R := s - t with hR_def
+  have hR_add : s = t + R := by rw [hR_def, add_comm]; exact (Multiset.sub_add_cancel ht_le).symm
+  have hR_card : R.card = n - 1 := by
+    have := congr_arg Multiset.card hR_add
+    simp [Multiset.card_add] at this; omega
+  -- All copies of a are in t (otherwise t + {a} is n-element zero-sum)
+  have hR_no_a : Multiset.count a R = 0 := by
+    by_contra h; push_neg at h
+    have ha_in_R : a ∈ R := Multiset.count_pos.mp (by omega)
+    exact hfree (t + {a})
+      (by rw [hR_add]; exact Multiset.add_le_add_left (Multiset.singleton_le.mpr ha_in_R))
+      (by simp [ht_card]; omega)
+      (by simp [Multiset.sum_add, ht_sum, add_comm])
+  -- Case 1: R has exactly 1 distinct value → that value has count n-1
+  by_cases hR_const : ∃ d, ∀ x ∈ R, x = d
+  · obtain ⟨d, hd_all⟩ := hR_const
+    refine ⟨d, ?_⟩
+    have hR_eq : R = Multiset.replicate (n - 1) d := by
+      ext x
+      by_cases hxd : d = x
+      · subst hxd
+        rw [Multiset.count_replicate_self]
+        exact (Multiset.count_eq_card.mpr (fun y hy => (hd_all y hy).symm)).symm ▸ hR_card
+      · rw [Multiset.count_replicate, if_neg hxd]
+        exact Multiset.count_eq_zero.mpr (fun hx => hxd (hd_all x hx).symm)
+    have hd_in_R : Multiset.count d R = n - 1 := by rw [hR_eq, Multiset.count_replicate_self]
+    have hcount := congr_arg (Multiset.count d) hR_add
+    simp [Multiset.count_add] at hcount
+    have := EGZFree.count_le hn hfree d
+    omega
+  · -- Case 2: R has ≥ 2 distinct values
+    push_neg at hR_const
+    -- R.map (· - a) has n-1 elements with ≥ 2 nonzero values
+    -- By all_eq contrapositive: NOT zero-sum free
+    -- So ∃ nonempty zero-sum submultiset of size m ≥ 2
+    -- Combined with copies of a → n-element zero-sum → contradiction with EGZ-free
+    -- This works when count(a, s) ≥ n - 2
+    -- For n ≤ 4: pigeonhole forces max count ≥ n - 2, so this always works
+    -- For n ≥ 5: not guaranteed (requires deeper argument)
+    -- First show R.map (·-a) is not zero-sum free
+    have hR'_card : (R.map (· - a)).card = n - 1 := by rw [Multiset.card_map]; exact hR_card
+    have hR'_not_zsf : ¬ZeroSumFree (R.map (· - a)) := by
+      intro hzsf
+      have hR_ne : R ≠ 0 := by intro h; simp [h] at hR_card; omega
+      obtain ⟨r, hr⟩ := Multiset.exists_mem_of_ne_zero hR_ne
+      have hall : ∀ x ∈ R, x = r := fun x hx =>
+        sub_left_injective (ZeroSumFree.all_eq hn hzsf hR'_card
+          (Multiset.mem_map_of_mem (· - a) hx) (Multiset.mem_map_of_mem (· - a) hr))
+      obtain ⟨x, hx_mem, hx_ne⟩ := hR_const r
+      exact hx_ne (hall x hx_mem)
+    -- Extract the zero-sum: ¬ZeroSumFree means ∃ nonempty sub with sum = 0
+    have ⟨v, hv_le, hv_ne, hv_sum⟩ : ∃ v ≤ R.map (· - a), v ≠ 0 ∧ v.sum = 0 := by
+      by_contra hall; push_neg at hall
+      exact hR'_not_zsf (fun v hv hne => hall v hv hne)
+    -- All elements of R.map (·-a) are nonzero (R has no a's)
+    have hno_zero : ∀ x ∈ R.map (· - a), x ≠ (0 : ZMod n) := by
+      intro x hx hx0; subst hx0
+      rw [Multiset.mem_map] at hx
+      obtain ⟨y, hy, hyd⟩ := hx
+      have : y = a := by rwa [sub_eq_zero] at hyd
+      subst this
+      exact absurd (Multiset.count_pos.mpr hy) (by rw [hR_no_a]; omega)
+    -- v.card ≥ 2 (no zeros, so single element can't sum to 0)
+    have hv_card_pos : 0 < v.card := by rwa [Multiset.card_pos, ← Multiset.empty_eq_zero]
+    have hv_card_pos : 0 < v.card := by
+      rw [Multiset.card_pos]; rwa [← Multiset.empty_eq_zero]
+    have hv_ge2 : 2 ≤ v.card := by
+      by_contra hlt; push_neg at hlt
+      have hv1 : v.card = 1 := by omega
+      obtain ⟨x, rfl⟩ := Multiset.card_eq_one.mp hv1
+      simp only [Multiset.sum_singleton] at hv_sum
+      exact hno_zero x (Multiset.mem_of_le hv_le (Multiset.mem_singleton_self x)) hv_sum
+    -- Preimage u = v.map (·+a) ≤ R with u.sum = v.card • a
+    set u := v.map (· + a)
+    have hu_le_R : u ≤ R := by
+      have hinv : (R.map (· - a)).map (· + a) = R := by
+        rw [Multiset.map_map]; simp [Function.comp]
+      rw [show u = v.map (· + a) from rfl, ← hinv]
+      exact Multiset.map_le_map hv_le
+    have hu_card : u.card = v.card := Multiset.card_map _ _
+    have hu_sum : u.sum = v.card • a := by
+      suffices hsuff : ∀ (w : Multiset (ZMod n)),
+          (w.map (· + a)).sum = w.sum + w.card • a by
+        rw [show u = v.map (· + a) from rfl, hsuff, hv_sum, zero_add]
+      intro w; induction w using Multiset.induction with
+      | empty => simp
+      | cons x t ih =>
+        simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.card_cons, succ_nsmul]
+        rw [ih]; ring
+    have hle_card : v.card ≤ n - 1 := by
+      have := Multiset.card_le_card hv_le; rw [hR'_card] at this; exact this
+    -- Need count(a, s) ≥ n - v.card to build the n-element zero-sum
+    -- count(a, s) = count(a, t) + count(a, R) = count(a, t) + 0 = count(a, t) ≤ n-1
+    have ha_count : Multiset.count a s ≤ n - 1 := EGZFree.count_le hn hfree a
+    -- If count(a, s) ≥ n - v.card: build zero-sum → contradiction
+    by_cases hcount_big : n - v.card ≤ Multiset.count a s
+    · exfalso
+      have ha_in_t : Multiset.count a s = Multiset.count a t := by
+        have := congr_arg (Multiset.count a) hR_add
+        simp [Multiset.count_add, hR_no_a] at this; omega
+      have hcomb_le : u + Multiset.replicate (n - v.card) a ≤ s := by
+        rw [hR_add, add_comm u]
+        exact add_le_add
+          (Multiset.le_count_iff_replicate_le.mp (by simp; omega)) hu_le_R
+      have hcomb_card : (u + Multiset.replicate (n - v.card) a).card = n := by
+        rw [Multiset.card_add, hu_card, Multiset.card_replicate]; omega
+      have hcomb_sum : (u + Multiset.replicate (n - v.card) a).sum = 0 := by
+        rw [Multiset.sum_add, hu_sum, multiset_sum_replicate, ← add_nsmul,
+            show v.card + (n - v.card) = n from by omega,
+            nsmul_eq_mul, ZMod.natCast_self, zero_mul]
+      exact hfree _ hcomb_le hcomb_card hcomb_sum
+    · -- count(a, s) < n - v.card, i.e., count(a, s) ≤ n - 3 (since v.card ≥ 2)
+      push_neg at hcount_big
+      have ha_small : Multiset.count a s ≤ n - 3 := by omega
+      -- Since a has max count, ALL elements have count ≤ n - 3
+      have hall_small : ∀ x, Multiset.count x s ≤ n - 3 :=
+        fun x => (ha_max x).trans ha_small
+      -- For n ≤ 4: derive contradiction (max count ≤ n-3 ≤ 1 is too small)
+      -- For n ≥ 5: deep remaining case
+      have ha_pos : 0 < Multiset.count a s := Multiset.count_pos.mpr ha
+      -- n ≤ 3: n - 3 = 0, so count a s = 0, but a ∈ s gives count > 0
+      -- n = 4: count ≤ 1 for all elements. s has ≤ 4 distinct values (ZMod 4),
+      --        each appearing ≤ 1 time, so s.card ≤ 4 < 6 = 2n-2.
+      -- n ≥ 5: sorry
+      by_cases hn4 : n ≤ 4
+      · exfalso
+        by_cases hn3 : n ≤ 3
+        · -- n ≤ 3: n - 3 = 0, count a s ≤ 0, contradicts a ∈ s
+          omega
+        · -- n = 4: all counts ≤ 1, so s ≤ univ.val, card ≤ 4 < 6
+          push_neg at hn3
+          have hn_eq : n = 4 := by omega
+          subst hn_eq
+          have hle_univ : s ≤ (Finset.univ : Finset (ZMod 4)).val := by
+            rw [Multiset.le_iff_count]; intro x
+            have hx_count := hall_small x -- count x s ≤ 1
+            have hx_in : x ∈ (Finset.univ : Finset (ZMod 4)).val :=
+              Finset.mem_univ x
+            have hx_pos := Multiset.count_pos.mpr hx_in
+            omega
+          have := Multiset.card_le_card hle_univ
+          simp [Finset.card_univ, ZMod.card] at this
+          omega
+      · -- n ≥ 5: the deep structural subcase
+        push_neg at hn4
+        sorry
+
 theorem EGZFree.at_most_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     (hfree : EGZFree s) (hcard : s.card = 2 * n - 2) :
     ∃ a b : ZMod n, ∀ x ∈ s, x = a ∨ x = b := by
-  haveI : NeZero n := ⟨by omega⟩
-  sorry
+  obtain ⟨d, hd⟩ := exists_count_pred hn hfree hcard
+  exact two_values_of_count_pred hn hfree hcard hd
 
 /-! ## The Inverse EGZ Theorem -/
 

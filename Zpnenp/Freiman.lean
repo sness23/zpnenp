@@ -18,6 +18,7 @@ import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.DoublingConst
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Tactic.Zify
 import Zpnenp.SubsetSum
 
 open Finset Pointwise
@@ -58,9 +59,57 @@ theorem addDoubling_gt_one_of_small (A : Finset (ZMod p))
 /-- In Z/pZ, iterating sumsets: |kA| ≥ min(p, k|A| - k + 1).
     Proved by induction using Cauchy-Davenport. -/
 theorem iterated_sumset_growth (A : Finset (ZMod p))
-    (hA : A.Nonempty) (k : ℕ) (hk : 1 ≤ k) :
+    (hA : A.Nonempty) : ∀ k : ℕ, 1 ≤ k →
     min p (k * #A - k + 1) ≤ #(k • A) := by
-  sorry -- induction on k using Cauchy-Davenport at each step
+  intro k
+  induction k with
+  | zero => omega
+  | succ k ih =>
+    intro hk
+    by_cases hk0 : k = 0
+    · -- Base: 1 • A = A
+      subst hk0
+      show min p (1 * #A - 1 + 1) ≤ #(1 • A)
+      rw [one_nsmul]
+      have hAcard : 1 ≤ #A := hA.card_pos
+      have : 1 * #A - 1 + 1 = #A := by omega
+      rw [this]
+      exact min_le_right p #A
+    · -- Inductive: (k+1) • A = k • A + A
+      have hk_pos : 1 ≤ k := by omega
+      have ih' := ih hk_pos
+      rw [succ_nsmul]
+      have hkA_ne : (k • A).Nonempty := hA.nsmul
+      have hcd := ZMod.cauchy_davenport hp.out hkA_ne hA
+      have hcard_le : #(k • A) ≤ p := by
+        have := Finset.card_le_univ (k • A)
+        rwa [ZMod.card] at this
+      have hAcard : 1 ≤ #A := hA.card_pos
+      have hkAcard : 1 ≤ #(k • A) := hkA_ne.card_pos
+      -- Extract key fact from ih': either k*#A-k+1 ≤ #(k•A) or p ≤ #(k•A)
+      have key : k * #A - k + 1 ≤ #(k • A) ∨ p ≤ #(k • A) := by
+        simp only [Nat.min_def] at ih'
+        split_ifs at ih' with h
+        · right; exact ih'
+        · left; exact ih'
+      have step1 : min p ((k + 1) * #A - (k + 1) + 1) ≤ min p (#(k • A) + #A - 1) := by
+        have sub1 : k + 1 ≤ (k + 1) * #A := Nat.le_mul_of_pos_right _ hAcard
+        have sub2 : 1 ≤ #(k • A) + #A := by omega
+        have sub3 : k ≤ k * #A := Nat.le_mul_of_pos_right _ hAcard
+        rcases key with hih | hp_le
+        · -- k*#A-k+1 ≤ #(k•A), show LHS ≤ RHS
+          have hlhs : (k + 1) * #A - (k + 1) + 1 = k * #A - k + 1 + (#A - 1) := by
+            zify [sub1, sub3, hAcard]; ring
+          have h5 : (k + 1) * #A - (k + 1) + 1 ≤ #(k • A) + #A - 1 := by
+            rw [hlhs, Nat.add_sub_assoc hAcard]
+            exact Nat.add_le_add_right hih _
+          exact min_le_min_left p h5
+        · -- p ≤ #(k•A), show min p X ≤ min p Y
+          have hmono : p ≤ #(k • A) + #A - 1 := by
+            rw [Nat.add_sub_assoc hAcard]
+            exact le_trans hp_le (Nat.le_add_right _ _)
+          exact le_min (min_le_left _ _) (le_trans (min_le_left _ _) hmono)
+      exact le_trans step1 hcd
 
 end DoublingInZMod
 
@@ -218,14 +267,40 @@ theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
   · exact zero_mem_subsetSumsZMod A
   · exact mem_subsetSumsZMod_of_mem A ha
 
-theorem large_subsetSumsZMod_of_large_doubling (p : ℕ) [Fact p.Prime]
+/-- Subset sums always contain {0} ∪ A. -/
+theorem card_subsetSumsZMod_ge_insert_zero (p : ℕ)
+    (A : Finset (ZMod p)) :
+    #(insert (0 : ZMod p) A) ≤ #(subsetSumsZMod A) := by
+  apply card_le_card
+  have h := insert_zero_union_subset_subsetSumsZMod p A
+  rwa [image_id] at h
+
+/-- When 0 ∉ A, subset sums have at least |A| + 1 elements.
+    This is the "growing" case: the empty-set sum 0 is a new element
+    beyond the |A| singleton sums. -/
+theorem card_subsetSumsZMod_ge_of_zero_not_mem (p : ℕ)
     (A : Finset (ZMod p)) (hA : A.Nonempty)
-    (hlarge : #A < #(A + A)) :
+    (h0 : (0 : ZMod p) ∉ A) :
     #A + 1 ≤ #(subsetSumsZMod A) := by
-  -- subsetSumsZMod ⊇ {0} ∪ A (by insert_zero_union_subset)
-  -- Plus distinct-pair sums a + b (by add_mem_subsetSumsZMod_of_ne)
-  -- Since |A + A| > |A|, there exist a, b with a + b ∉ A ∪ {0}
-  sorry
+  have h := card_subsetSumsZMod_ge_insert_zero p A
+  rwa [card_insert_of_notMem h0] at h
+
+/-- When distinct a, b ∈ A have a + b ∉ insert 0 A, subset sums are
+    strictly larger than {0} ∪ A. This captures the "growth" phenomenon:
+    pair sums provide genuinely new achievable targets. -/
+theorem card_subsetSumsZMod_gt_of_new_pair_sum (p : ℕ)
+    (A : Finset (ZMod p)) {a b : ZMod p}
+    (ha : a ∈ A) (hb : b ∈ A) (hab : a ≠ b)
+    (hnew : a + b ∉ insert (0 : ZMod p) A) :
+    #(insert (0 : ZMod p) A) + 1 ≤ #(subsetSumsZMod A) := by
+  have hmem : a + b ∈ subsetSumsZMod A :=
+    add_mem_subsetSumsZMod_of_ne A ha hb hab
+  have hsub : insert (0 : ZMod p) A ⊆ subsetSumsZMod A := by
+    have h := insert_zero_union_subset_subsetSumsZMod p A
+    rwa [image_id] at h
+  have hlt : #(insert (0 : ZMod p) A) < #(subsetSumsZMod A) :=
+    card_lt_card ⟨hsub, fun h => hnew (h hmem)⟩
+  omega
 
 /-! ## Summary
 
@@ -238,10 +313,12 @@ additive combinatorics to the Subset Sum problem:
 - `subsetSumsZMod` definition and basic properties
 - Ruzsa triangle inequality (from Mathlib)
 
+- `card_subsetSumsZMod_ge_insert_zero`: Subset sums ⊇ {0} ∪ A
+- `card_subsetSumsZMod_ge_of_zero_not_mem`: When 0 ∉ A, |SS(A)| ≥ |A| + 1
+- `card_subsetSumsZMod_gt_of_new_pair_sum`: New pair sums → strictly more
+
 **Stated** (sorry):
-- `iterated_sumset_growth`: Iterated Cauchy-Davenport
 - `freiman_ZMod`: Freiman's theorem for Z/pZ
-- `large_subsetSumsZMod_of_large_doubling`: Growth implies large subset sums
 
 **Framework**:
 - Structural dichotomy: growing vs. structured inputs
