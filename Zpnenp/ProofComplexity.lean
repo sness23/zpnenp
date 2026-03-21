@@ -67,7 +67,7 @@ theorem prefixSums_zero {n : ℕ} (l : List (ZMod n)) :
 
 /-- A collision in prefix sums gives a contiguous zero-sum. -/
 theorem collision_gives_zerosum {n : ℕ} (l : List (ZMod n))
-    {i j : ℕ} (hij : i < j) (hj : j ≤ l.length)
+    {i j : ℕ} (hij : i < j) (_hj : j ≤ l.length)
     (hcol : (l.take i).sum = (l.take j).sum) :
     ((l.drop i).take (j - i)).sum = 0 := by
   have htake_eq : l.take j = l.take i ++ (l.drop i).take (j - i) := by
@@ -121,7 +121,7 @@ We formalize the key properties that make our PHP instance special.
 
 /-- The prefix sum map from Fin (n+1) to ZMod n, for a list of length n.
     This is the specific PHP instance used in `davenport_upper`. -/
-def davenportPHP {n : ℕ} (l : List (ZMod n)) (hl : l.length = n) :
+def davenportPHP {n : ℕ} (l : List (ZMod n)) (_hl : l.length = n) :
     Fin (n + 1) → ZMod n :=
   fun i => (l.take i.val).sum
 

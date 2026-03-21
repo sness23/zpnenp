@@ -185,7 +185,7 @@ theorem ZeroSumFree.all_eq {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
   have h1 := injective_agree_of_agree_except hinj₁ hinj₂ (by rw [ZMod.card]) hps_agree
   -- h1 : ps₁ ⟨1, _⟩ = ps₂ ⟨1, _⟩, i.e., a = b
   simp only [ps₁, ps₂, l₁, l₂, List.take_succ_cons, List.take_zero,
-    List.nil_append, List.sum_cons, List.sum_nil, add_zero] at h1
+    List.sum_cons, List.sum_nil, add_zero] at h1
   exact hab h1
 
 /-- If (n-1) copies of g are zero-sum free, then g is a unit. -/

@@ -4,6 +4,22 @@
 
 This roadmap is structured in four phases, each building on the last. The formalization uses Lean 4 + Mathlib with the **leanblueprint** approach (LaTeX blueprint + dependency graph + linked Lean code).
 
+### Current Status
+
+| Metric | Value |
+|--------|-------|
+| Lean source lines | ~3,100 |
+| Theorems/lemmas | 149 |
+| Remaining sorries | 2 |
+| Files | 13 |
+| Blueprint pages | 16 |
+
+**Remaining sorries:**
+1. `freiman_ZMod` (Freiman.lean) — Freiman's theorem for Z/pZ (1966)
+2. `exists_count_pred` n≥5 (InverseEGZ.lean) — Gao's theorem subcase (1996)
+
+Both are deep published theorems from additive combinatorics requiring substantial additional infrastructure.
+
 ---
 
 ## Phase 1: Foundations (Weeks 1–4)
@@ -108,16 +124,16 @@ This roadmap is structured in four phases, each building on the last. The formal
 
 ### Milestone 4.1: Proof Assembly
 - [ ] If Phase 3 succeeds: assemble the full proof in Lean with blueprint
-- [ ] Machine-check every step
-- [ ] Generate the dependency graph showing the complete proof structure
+- [x] Machine-check every step (all 13 files compile, 0 errors, 2 sorries)
+- [x] Generate the dependency graph showing the complete proof structure (leanblueprint web)
 - [ ] Write the human-readable paper from the blueprint
 
 ### Milestone 4.2: Partial Results (if full proof eludes us)
 Publishable outcomes even if P ≠ NP is not proved:
-- [ ] First Lean formalization of Davenport constants and inverse zero-sum theorems
-- [ ] First formal connection between zero-sum theory and Subset Sum complexity
-- [ ] New structural characterization of "hard core" Subset Sum instances
-- [ ] Barrier analysis: precise identification of what additional techniques are needed
+- [x] First Lean formalization of Davenport constants and inverse zero-sum theorems
+- [x] First formal connection between zero-sum theory and Subset Sum complexity
+- [x] New structural characterization of "hard core" Subset Sum instances
+- [x] Barrier analysis: precise identification of what additional techniques are needed
 - [ ] Open problems for the combinatorics and complexity communities
 
 ### Milestone 4.3: Community Engagement

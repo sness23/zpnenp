@@ -282,7 +282,7 @@ private theorem two_values_of_count_pred {n : ℕ} (hn : 1 < n) {s : Multiset (Z
     simp [Multiset.card_add, Multiset.card_replicate] at this; omega
   have hR_no_d : Multiset.count d R = 0 := by
     have h := congr_arg (Multiset.count d) hR_add
-    simp [Multiset.count_add, Multiset.count_replicate] at h; omega
+    simp at h; omega
   -- R.map (· - d) is zero-sum free
   -- (If not, the zero-sum preimage + copies of d forms n-element zero-sum in s)
   have hR'_zsf : ZeroSumFree (R.map (· - d)) := by
@@ -379,7 +379,7 @@ private theorem exists_count_pred {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
     have : ∀ x, Multiset.count x s = 0 := fun x => Nat.le_zero.mp ((ha_max x).trans (by omega))
     have : s.card = 0 := by
       rw [Multiset.card_eq_zero]; ext x
-      simp [Multiset.count_zero, Nat.le_zero.mp ((ha_max x).trans (by omega))]
+      simp [Nat.le_zero.mp ((ha_max x).trans (by omega))]
     omega
   -- Apply exists_sum_eq to get t ≤ s with |t| = n-1, t.sum = -a
   obtain ⟨t, ht_le, ht_card, ht_sum⟩ := EGZFree.exists_sum_eq hn hfree hcard a

@@ -48,6 +48,7 @@ def productSet (A : Finset (ZMod p)) : Finset (ZMod p) :=
 def sumProductSize (A : Finset (ZMod p)) : ℕ :=
   max #(A + A) #(A * A)
 
+omit hp in
 /-- Trivial lower bound: sumset is at least |A|. -/
 theorem card_add_self_ge (A : Finset (ZMod p)) (hA : A.Nonempty) :
     #A ≤ #(A + A) := by
@@ -141,7 +142,7 @@ the adversary who tries to make Subset Sum hard.
     where achievableSums = {0, a} has the same cardinality as A.
     Removing 0 from A is WLOG since 0 doesn't change subset sums. -/
 theorem large_achievableSums_of_zero_not_mem (p : ℕ) [Fact p.Prime]
-    (inst : ModSubsetSumInstance p) (hA : inst.elements.Nonempty)
+    (inst : ModSubsetSumInstance p) (_hA : inst.elements.Nonempty)
     (h0 : (0 : ZMod p) ∉ inst.elements) :
     #inst.elements < #(achievableSums inst) := by
   have hsub : insert (0 : ZMod p) inst.elements ⊆ achievableSums inst := by

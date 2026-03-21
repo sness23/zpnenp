@@ -73,7 +73,7 @@ theorem subsetSums_range_bound (s : Finset ℕ) (M : ℕ)
     This is the foundation of the density argument: at high density
     (n / log₂(M) >> 1), collisions are forced, making Subset Sum easy. -/
 theorem pigeonhole_collision (s : Finset ℕ) (M : ℕ)
-    (hM : ∀ w ∈ s, w ≤ M) (hM_pos : 0 < M)
+    (hM : ∀ w ∈ s, w ≤ M) (_hM_pos : 0 < M)
     (hdense : s.card * M + 1 < 2 ^ s.card) :
     ∃ s₁ ∈ s.powerset, ∃ s₂ ∈ s.powerset, s₁ ≠ s₂ ∧ s₁.sum id = s₂.sum id := by
   -- Use Finset pigeonhole: map powerset to Finset.range (n*M + 1)

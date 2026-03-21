@@ -266,11 +266,11 @@ standard Subset Sum over ℤ.
     Specifically: for any Finset s and element a ∈ s, there exists a
     replacement a' such that SubsetSum (s.erase a ∪ {a'}) t holds iff
     we want it to. The adversary controls the answer. -/
-theorem adversary_controls_one_element (s : Finset ℤ) (a : ℤ) (ha : a ∈ s) (t : ℤ) :
+theorem adversary_controls_one_element (s : Finset ℤ) (a : ℤ) (_ha : a ∈ s) (t : ℤ) :
     ∃ a' : ℤ, SubsetSum ({a'} ∪ (s.erase a)) t := by
   -- Choose a' = t - (elements of s.erase a that we DON'T include)
   -- Simplest: choose a' = t, then {a'} is a subset summing to t
-  exact ⟨t, ⟨{t}, by simp [Finset.mem_powerset, Finset.subset_union_left], by simp⟩⟩
+  exact ⟨t, ⟨{t}, by simp [Finset.mem_powerset], by simp⟩⟩
 
 /-- The adversary can also make Subset Sum FALSE by choosing the
     remaining element appropriately (making all subset sums avoid t).
@@ -387,7 +387,7 @@ theorem structural_theory_is_combinatorial :
     -- The inverse Davenport theorem is a purely algebraic statement:
     -- it characterizes multisets by their combinatorial properties,
     -- with no mention of computation
-    ∀ (n : ℕ) (hn : 1 < n) (s : Multiset (ZMod n)) (hcard : s.card = n - 1),
+    ∀ (n : ℕ) (_ : 1 < n) (s : Multiset (ZMod n)) (_ : s.card = n - 1),
       ZeroSumFree s ↔ ∃ g : ZMod n, IsUnit g ∧ s = Multiset.replicate (n - 1) g :=
   fun n hn s hcard => inverse_davenport n hn s hcard
 
@@ -503,6 +503,7 @@ theorem structure_vs_computation_sum_product (A : Finset (ZMod p))
     #A < max #(A + A) #(A * A) := by
   exact bourgain_katz_tao p A hA hAp
 
+omit hp in
 /-- **Sumset growth implies many achievable sums.**
     When the sumset of A grows (|A+A| > |A|), the set of all subset
     sums (subsetSumsZMod) is strictly larger than A ∪ {0}.

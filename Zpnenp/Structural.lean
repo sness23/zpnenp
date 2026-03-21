@@ -111,7 +111,7 @@ theorem card_subsetSums_ge (s : Finset ℤ) (hs : ∀ x ∈ s, x ≠ 0) :
 /-- For a nonempty set of nonzero integers, the subset sums strictly
     outnumber the elements. This is the "growth" phenomenon:
     the empty-subset sum 0 provides a new achievable value. -/
-theorem subsetSums_growth (s : Finset ℤ) (hs_ne : s.Nonempty)
+theorem subsetSums_growth (s : Finset ℤ) (_hs_ne : s.Nonempty)
     (hs_nz : ∀ x ∈ s, x ≠ 0) :
     s.card < (subsetSums s).card := by
   have := card_subsetSums_ge s hs_nz; omega

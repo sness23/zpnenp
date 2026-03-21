@@ -279,7 +279,7 @@ theorem card_subsetSumsZMod_ge_insert_zero (p : ℕ)
     This is the "growing" case: the empty-set sum 0 is a new element
     beyond the |A| singleton sums. -/
 theorem card_subsetSumsZMod_ge_of_zero_not_mem (p : ℕ)
-    (A : Finset (ZMod p)) (hA : A.Nonempty)
+    (A : Finset (ZMod p)) (_hA : A.Nonempty)
     (h0 : (0 : ZMod p) ∉ A) :
     #A + 1 ≤ #(subsetSumsZMod A) := by
   have h := card_subsetSumsZMod_ge_insert_zero p A
