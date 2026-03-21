@@ -18,6 +18,8 @@
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 import Mathlib.Data.ZMod.Basic
 import Zpnenp.SubsetSum
+import Zpnenp.Freiman
+import Zpnenp.Inverse
 
 open Finset Pointwise
 
@@ -106,6 +108,11 @@ theorem modSubsetSums_full {p : ℕ} [hp : Fact p.Prime] (s : Finset (ZMod p))
     Finset.eq_univ_of_card _ (hfull.trans huniv.symm)
   rw [this]; exact Finset.mem_univ t
 
+/-- `modSubsetSums` agrees with `subsetSumsZMod` from Freiman.lean —
+    both compute the powerset image of sum. -/
+theorem modSubsetSums_eq_subsetSumsZMod {p : ℕ} (s : Finset (ZMod p)) :
+    modSubsetSums s = subsetSumsZMod s := rfl
+
 /-! ## Connection to the Davenport constant and inverse theorem
 
 Cauchy-Davenport gives *sumset growth*. Combined with our results:
@@ -133,3 +140,24 @@ rapidly unless the input has special additive structure (as
 characterized by Freiman's theorem). At critical density d ~ 1,
 the interplay between growth (Cauchy-Davenport) and structure
 (Freiman) determines the hardness landscape. -/
+
+/-! ## Extremal subset sum coverage
+
+The inverse Davenport theorem tells us that zero-sum-free multisets
+of maximal length have FULL subset sum coverage (every element of
+Z/nZ is achievable as a prefix sum). This is a strong "coverage"
+result: even the adversary's BEST strategy to avoid zero-sums
+produces instances with maximal subset sum diversity.
+
+For Subset Sum over Z/pZ, this means: at the Davenport threshold,
+the adversary cannot simultaneously avoid zero-sums AND restrict
+the set of achievable sums. Structure forces coverage. -/
+
+/-- A zero-sum-free multiset of size n-1 achieves every element of
+    Z/nZ as a prefix sum. This follows from `prefix_sums_surjective`
+    in Inverse.lean. Restated here to connect to the subset sum framework. -/
+theorem zeroSumFree_full_prefix_coverage {n : ℕ} (hn : 1 < n)
+    {l : List (ZMod n)} (hzsf : ZeroSumFree (↑l : Multiset (ZMod n)))
+    (hlen : l.length = n - 1) :
+    ∀ x : ZMod n, ∃ i : Fin n, (l.take i.val).sum = x := by
+  exact ZeroSumFree.prefix_sums_surjective hn hzsf hlen
