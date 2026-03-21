@@ -11,8 +11,8 @@ This roadmap is structured in four phases, each building on the last. The formal
 **Goal**: Define Subset Sum in Lean, connect to existing Mathlib infrastructure, and formalize the basic objects of zero-sum theory.
 
 ### Milestone 1.1: Project Setup
-- [ ] Initialize Lean 4 project with Mathlib dependency (`lake init zpnenp math`)
-- [ ] Set up leanblueprint (`pip install leanblueprint`, template from [LeanProject](https://github.com/leanprover-community/LeanProject))
+- [x] Initialize Lean 4 project with Mathlib dependency
+- [ ] Set up leanblueprint
 - [ ] Create initial blueprint LaTeX document with dependency graph
 - [ ] CI pipeline: `lake build` + `leanblueprint all` on push
 
@@ -27,10 +27,10 @@ This roadmap is structured in four phases, each building on the last. The formal
 - [x] Define modular variant `SubsetSumMod` over `ZMod n`
 
 ### Milestone 1.3: Connect to Existing Mathlib
-- [ ] Import and verify `Mathlib.Combinatorics.Additive.ErdosGinzburgZiv`
-- [ ] State the connection: EGZ implies `SubsetSumMod` is trivially true for sets of size ≥ 2n−1
+- [x] Import and verify `Mathlib.Combinatorics.Additive.ErdosGinzburgZiv`
+- [x] State the connection: EGZ used in InverseEGZ.lean (`ZMod.erdos_ginzburg_ziv_multiset`)
 - [ ] Import `Mathlib.Combinatorics.SetFamily.Shatter` (Sauer-Shelah)
-- [ ] Import `Mathlib.Combinatorics.Additive.PluenneckeRuzsa`
+- [x] Import `Mathlib.Combinatorics.Additive.PluenneckeRuzsa` (used in Freiman.lean)
 
 ### Milestone 1.4: Davenport Constant
 - [x] Define Davenport constant D(G) for finite abelian groups
