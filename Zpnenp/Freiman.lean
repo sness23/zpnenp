@@ -323,6 +323,21 @@ All three approaches require infrastructure not yet in Mathlib
 (lifting Z/pZ sums to Z, gap analysis, or energy bounds).
 -/
 
+/-- After optimal rotation, |A| elements in Z/pZ fit in an arc of
+    length at most p - ⌈(p - |A|) / |A|⌉. The longest gap has
+    size at least ⌈(p - |A|) / |A|⌉ (pigeonhole on gaps). -/
+theorem circDiam_le_of_card {p : ℕ} [hp : Fact p.Prime]
+    (A : Finset (ZMod p)) (hA : A.Nonempty) (hAp : #A < p) :
+    circDiam A ≤ p - 1 := by
+  haveI : NeZero p := ⟨Nat.Prime.ne_zero hp.out⟩
+  simp only [circDiam, hA, ↓reduceDIte]
+  -- circSpreadFrom A 0 ≤ p - 1 (since val < p)
+  calc Finset.inf' Finset.univ _ (fun a => circSpreadFrom A a)
+      ≤ circSpreadFrom A 0 := Finset.inf'_le _ (Finset.mem_univ 0)
+    _ ≤ p - 1 := by
+        apply Finset.sup_le; intro s _
+        have := ZMod.val_lt (s - 0); omega
+
 -- Note: `ZMod.val_add_of_lt` is already in Mathlib:
 -- ZMod.val (a + b) = ZMod.val a + ZMod.val b when val a + val b < p.
 -- This is the key "no wraparound" lemma.
