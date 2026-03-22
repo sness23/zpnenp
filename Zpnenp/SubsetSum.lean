@@ -78,3 +78,22 @@ theorem mem_subsetSums_of_mem {s : Finset ℤ} {a : ℤ} (ha : a ∈ s) :
     a ∈ subsetSums s := by
   rw [mem_subsetSums]
   exact ⟨{a}, Finset.mem_powerset.mpr (Finset.singleton_subset_iff.mpr ha), by simp⟩
+
+/-- The empty set has exactly one achievable sum: 0. -/
+theorem subsetSums_empty : subsetSums (∅ : Finset ℤ) = {0} := by
+  ext x; simp [subsetSums, SubsetSum, mem_image, mem_powerset]
+
+/-- SubsetSum is decidable for any finite set and target. -/
+instance SubsetSum.decidable (s : Finset ℤ) (t : ℤ) : Decidable (SubsetSum s t) := by
+  rw [show SubsetSum s t ↔ t ∈ subsetSums s from mem_subsetSums.symm]
+  exact inferInstance
+
+/-- SubsetSumZero relates to SubsetSum with target 0, but requires nonempty witness. -/
+theorem subsetSumZero_iff (s : Finset ℤ) :
+    SubsetSumZero s ↔ ∃ s' ∈ s.powerset, s' ≠ ∅ ∧ s'.sum id = 0 := by
+  rfl
+
+/-- The total sum of all elements is an achievable subset sum. -/
+theorem sum_mem_subsetSums (s : Finset ℤ) : s.sum id ∈ subsetSums s := by
+  rw [mem_subsetSums]
+  exact ⟨s, mem_powerset.mpr (Subset.refl s), rfl⟩
