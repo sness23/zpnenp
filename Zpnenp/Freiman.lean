@@ -297,6 +297,32 @@ theorem ap_containment_of_circDiam {p : ℕ} [hp : Fact p.Prime]
   exact ⟨⟨ZMod.val (x - a), by omega⟩, by
     simp only [nsmul_eq_mul, mul_one, ZMod.natCast_val, ZMod.cast_id', id]; ring⟩
 
+/-! ### Roadmap for the rectification step
+
+To close the Freiman sorry, the remaining step is:
+
+**Goal**: Given A with |A+A| ≤ K|A| and K²|A| < p, find d ∈ (Z/pZ)*
+such that circDiam(A·d⁻¹) ≤ K²|A| - 1.
+
+**Approach 1 (no-wraparound)**:
+If circDiam(A) < p/2 for the identity direction (d = 1), then A+A
+has no wraparound in Z/pZ and |A+A| ≥ |A| + circDiam(A) (integer bound).
+This gives circDiam(A) ≤ |A+A| - |A| ≤ (K-1)|A| ≤ K²|A| - 1. Done.
+
+**Approach 2 (gap rotation)**:
+If circDiam(A) ≥ p/2 with d = 1, rotate to align the longest gap
+at position 0. The longest gap has size ≥ (p - |A|)/|A|. After
+rotation, circDiam ≤ p - gap. With |A| ≤ p/K: gap ≥ p(1-1/K)/|A|.
+
+**Approach 3 (direction averaging)**:
+Average circDiam(A·d⁻¹) over all d ∈ (Z/pZ)*. The average relates
+to the "additive energy" of A. By Plünnecke-Ruzsa, this gives
+a bound on the average, ensuring some d is good.
+
+All three approaches require infrastructure not yet in Mathlib
+(lifting Z/pZ sums to Z, gap analysis, or energy bounds).
+-/
+
 /-- **Freiman's theorem for Z/pZ** (simplified).
     Sets with small doubling are contained in short arithmetic progressions.
 
