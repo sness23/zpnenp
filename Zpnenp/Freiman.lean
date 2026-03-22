@@ -379,6 +379,18 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     by_cases hA_empty : A = ∅
     · subst hA_empty; exact ⟨0, 0, 0, by simp, by simp⟩
     have hA : A.Nonempty := Finset.nonempty_iff_ne_empty.mpr hA_empty
+    -- Handle K = 1: A must be a singleton
+    by_cases hK1 : K = 1
+    · subst hK1; simp at hsmall hbig
+      have hp_pos : 0 < p := Nat.Prime.pos (Fact.out)
+      have hA1 : #A = 1 := by
+        by_contra h
+        have hA2 : 2 ≤ #A := by
+          have := hA.card_pos; omega
+        exact absurd (addDoubling_gt_one_of_small A hA2 (by omega)) (by omega)
+      obtain ⟨a, rfl⟩ := Finset.card_eq_one.mp hA1
+      exact ⟨a, 0, 1, by simp, fun x hx => ⟨⟨0, by omega⟩, by simp at hx; simp [hx]⟩⟩
+    have hK2 : 2 ≤ K := by omega
     -- Step 1: Ruzsa covering gives A ⊆ F + (A - A) with |F| ≤ K
     obtain ⟨F, _hFA, hF_card, hA_cov⟩ :=
       Finset.ruzsa_covering_add hA (K := K) (by exact_mod_cast hsmall)
@@ -417,6 +429,7 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     -- hsmall : #(A + A) ≤ K * #A
     -- hA_cov : A ⊆ F + (A - A) with #F ≤ K
     --
+    -- K ≥ 2: the general rectification case
     -- The rectification step uses the doubling condition to show
     -- that among all "directions" d ∈ (Z/pZ)*, some d makes
     -- the circular spread of A·d⁻¹ at most K²|A| - 1.
