@@ -15,6 +15,7 @@
 -/
 
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.DoublingConst
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 import Mathlib.Data.ZMod.Basic
@@ -263,13 +264,34 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     refine ⟨⟨ZMod.val x, ZMod.val_lt x⟩, ?_⟩
     simp [nsmul_eq_mul, mul_one, ZMod.natCast_val, ZMod.cast_id']
   · -- Non-trivial case: K²|A| < p
-    -- This requires the full Freiman argument:
-    -- Ruzsa covering + Plünnecke-Ruzsa + Z/pZ field structure
-    -- The difference set A - A has |A - A| ≤ K²|A| < p (by Plünnecke-Ruzsa)
-    -- A is covered by ≤ K translates of A - A (by Ruzsa covering)
-    -- In Z/pZ, this covering yields AP containment
     push_neg at hbig
-    sorry -- The non-trivial Freiman argument (K²|A| < p)
+    -- Handle empty A
+    by_cases hA_empty : A = ∅
+    · subst hA_empty; exact ⟨0, 0, 0, by simp, by simp⟩
+    have hA : A.Nonempty := Finset.nonempty_iff_ne_empty.mpr hA_empty
+    -- Step 1: Ruzsa covering gives A ⊆ F + (A - A) with |F| ≤ K
+    obtain ⟨F, _hFA, hF_card, hA_cov⟩ :=
+      Finset.ruzsa_covering_add hA (K := K) (by exact_mod_cast hsmall)
+    -- Step 2: Ruzsa triangle inequality bounds the difference set
+    -- #(A - A) * #A ≤ #(A + A)² ≤ (K * #A)² = K² * #A²
+    -- So #(A - A) ≤ K² * #A
+    have hdiff_triangle : #(A - A) * #A ≤ #(A + A) * #(A + A) :=
+      Finset.ruzsa_triangle_inequality_sub_add_add A A A
+    have hdiff_bound : #(A - A) ≤ K ^ 2 * #A := by
+      have hA_pos : 0 < #A := hA.card_pos
+      -- From triangle: #(A-A) * #A ≤ #(A+A)² ≤ (K*#A)² = K²*#A²
+      have h1 : #(A + A) * #(A + A) ≤ K * #A * (K * #A) :=
+        Nat.mul_le_mul hsmall hsmall
+      have h2 : #(A - A) * #A ≤ K * #A * (K * #A) := hdiff_triangle.trans h1
+      -- K*#A*(K*#A) = K²*#A² = K²*#A*#A
+      rw [show K * #A * (K * #A) = K ^ 2 * #A * #A from by ring] at h2
+      exact Nat.le_of_mul_le_mul_right h2 hA_pos
+    -- Step 3: F + (A - A) is contained in an AP
+    -- This is the Z/pZ-specific step: covering → AP containment
+    -- In Z/pZ (p prime, no proper subgroups), a union of K translates
+    -- of a set of size ≤ K²|A| < p is contained in an AP of length ≤ K²|A|.
+    -- The argument uses the field structure of Z/pZ.
+    sorry -- covering_to_AP: F + (A - A) ⊆ AP of length ≤ K²|A|
 
 /-- The subset sums of A contain A ∪ {0} (singletons + empty set). -/
 theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
