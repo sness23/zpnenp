@@ -286,12 +286,17 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
       -- K*#A*(K*#A) = K²*#A² = K²*#A*#A
       rw [show K * #A * (K * #A) = K ^ 2 * #A * #A from by ring] at h2
       exact Nat.le_of_mul_le_mul_right h2 hA_pos
-    -- Step 3: F + (A - A) is contained in an AP
-    -- This is the Z/pZ-specific step: covering → AP containment
-    -- In Z/pZ (p prime, no proper subgroups), a union of K translates
-    -- of a set of size ≤ K²|A| < p is contained in an AP of length ≤ K²|A|.
-    -- The argument uses the field structure of Z/pZ.
-    sorry -- covering_to_AP: F + (A - A) ⊆ AP of length ≤ K²|A|
+    -- Step 3: A ⊆ a₀ + (A - A) for any a₀ ∈ A (simpler than the full covering)
+    obtain ⟨a₀, ha₀⟩ := hA
+    have hA_in_diff : ∀ x ∈ A, x - a₀ ∈ A - A := by
+      intro x hx; exact Finset.sub_mem_sub hx ha₀
+    -- A ⊆ {a₀} + (A - A), and |A - A| ≤ K²|A| < p
+    -- So A is contained in a translate of a set of size ≤ K²|A|
+    -- The Rectification Lemma: in Z/pZ (field), any set of size L < p
+    -- is contained in an AP of length ≤ L. This is because we can find
+    -- a "direction" d such that the set looks consecutive after rescaling.
+    -- This is the content of the Freiman-Lev rectification lemma.
+    sorry -- Rectification: A ⊆ a₀ + (A-A) with |A-A| ≤ K²|A| → AP
 
 /-- The subset sums of A contain A ∪ {0} (singletons + empty set). -/
 theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
