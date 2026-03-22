@@ -248,25 +248,13 @@ If A ⊆ Z/pZ with |A + A| ≤ K|A| and |A| ≤ p/K, then A is
 contained in an arithmetic progression of length ≤ K²|A|.
 -/
 
-/-- **Rectification Lemma for Z/pZ**: Any set S ⊆ Z/pZ with |S| < p
-    is contained in an arithmetic progression of length |S|.
+/-- **Freiman's theorem for Z/pZ** (simplified).
+    Sets with small doubling are contained in short arithmetic progressions.
 
-    In Z/pZ (p prime), every nonzero element is a unit. For any set S,
-    we can find a "direction" d and starting point a such that
-    S ⊆ {a, a+d, a+2d, ..., a+(|S|-1)d}.
-
-    Proof idea: Consider S·d⁻¹ for each d ∈ (Z/pZ)*. Map to {0,...,p-1}.
-    The "spread" (max - min in {0,...,p-1}) varies with d. For some d,
-    the spread is ≤ |S| - 1, meaning S fits in an AP of length |S|. -/
-theorem rectification_ZMod (p : ℕ) [hp : Fact p.Prime] (S : Finset (ZMod p))
-    (hS : #S < p) (hS_ne : S.Nonempty) :
-    ∃ (a d : ZMod p) (L : ℕ),
-      L ≤ #S ∧ ∀ x ∈ S, ∃ k : Fin L, x = a + k.val • d := by
-  haveI : NeZero p := ⟨Nat.Prime.ne_zero hp.out⟩
-  sorry -- The rectification lemma
-
-/-- **Freiman's theorem for Z/pZ** (simplified, stated without proof).
-    Sets with small doubling are contained in short arithmetic progressions. -/
+    Note: the proof reduces to showing that A (via its difference set
+    A - A) fits in a short AP. The non-trivial case requires the
+    Freiman-Lev rectification argument which uses the DOUBLING CONDITION
+    (not just the set size) to find the right AP direction. -/
 theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     (K : ℕ) (hK : 1 ≤ K) (hsmall : #(A + A) ≤ K * #A)
     (hsize : #A ≤ p / K) :
@@ -313,19 +301,22 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     -- is contained in an AP of length ≤ L. This is because we can find
     -- a "direction" d such that the set looks consecutive after rescaling.
     -- This is the content of the Freiman-Lev rectification lemma.
-    -- Apply rectification to A - A (which has size ≤ K²|A| < p)
-    have hAmA_ne : (A - A).Nonempty := by
-      exact ⟨a₀ - a₀, Finset.sub_mem_sub ha₀ ha₀⟩
-    have hAmA_lt_p : #(A - A) < p := by omega
-    obtain ⟨a', d, L, hL_le, hL_mem⟩ := rectification_ZMod p (A - A) hAmA_lt_p hAmA_ne
-    -- A - A ⊆ AP{a', d, L} with L ≤ |A - A| ≤ K²|A|
-    refine ⟨a₀ + a', d, L, le_trans hL_le hdiff_bound, fun x hx => ?_⟩
-    -- x ∈ A, so x - a₀ ∈ A - A, so x - a₀ ∈ AP{a', d, L}
-    obtain ⟨k, hk⟩ := hL_mem (x - a₀) (hA_in_diff x hx)
-    -- hk : x - a₀ = a' + k.val • d, need: x = (a₀ + a') + k.val • d
-    refine ⟨k, ?_⟩
-    have := sub_eq_iff_eq_add.mp hk -- x = a₀ + (a' + k.val • d)
-    rw [this]; ring
+    -- The Freiman-Lev rectification argument:
+    -- Using the DOUBLING CONDITION |A+A| ≤ K|A| (not just |A-A| ≤ K²|A|),
+    -- find a direction d such that A fits in an AP of length ≤ K²|A|.
+    --
+    -- Available facts at this point:
+    -- hA_in_diff : ∀ x ∈ A, x - a₀ ∈ A - A
+    -- hdiff_bound : #(A - A) ≤ K² * #A
+    -- hbig : K² * #A < p
+    -- hsmall : #(A + A) ≤ K * #A
+    -- hA_cov : A ⊆ F + (A - A) with #F ≤ K
+    --
+    -- The rectification step uses the doubling condition to show
+    -- that among all "directions" d ∈ (Z/pZ)*, some d makes
+    -- the circular spread of A·d⁻¹ at most K²|A| - 1.
+    -- This is a genuine theorem requiring the field structure of Z/pZ.
+    sorry
 
 /-- The subset sums of A contain A ∪ {0} (singletons + empty set). -/
 theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
