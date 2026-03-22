@@ -248,6 +248,55 @@ If A ⊆ Z/pZ with |A + A| ≤ K|A| and |A| ≤ p/K, then A is
 contained in an arithmetic progression of length ≤ K²|A|.
 -/
 
+/-! ## Circular Spread in Z/pZ
+
+The "circular spread" measures how compactly a set sits on the
+circle Z/pZ. For each starting point a, the spread from a is
+max_{s ∈ S} val(s - a), where val maps to {0, ..., p-1}.
+The circular diameter is the minimum spread over all starting points.
+
+A set with circular diameter D is contained in an AP of length D + 1
+(with common difference 1, starting at the optimal a).
+Rescaling by d: circDiam(S·d) measures the spread in "direction d."
+-/
+
+/-- The spread of S from starting point a: max of ZMod.val (s - a) over s ∈ S.
+    Returns 0 for empty S. -/
+noncomputable def circSpreadFrom {p : ℕ} [NeZero p]
+    (S : Finset (ZMod p)) (a : ZMod p) : ℕ :=
+  S.sup (fun s => ZMod.val (s - a))
+
+/-- The circular diameter of S: minimum spread over all starting points.
+    This is the length of the shortest arc (in direction 1) containing S. -/
+noncomputable def circDiam {p : ℕ} [NeZero p]
+    (S : Finset (ZMod p)) : ℕ :=
+  if h : S.Nonempty then
+    Finset.inf' Finset.univ Finset.univ_nonempty (fun a => circSpreadFrom S a)
+  else 0
+
+/-- A set with circular diameter D fits in an AP of length D + 1
+    (with common difference 1). -/
+theorem ap_containment_of_circDiam {p : ℕ} [hp : Fact p.Prime]
+    (S : Finset (ZMod p)) (hS : S.Nonempty) :
+    ∃ (a : ZMod p),
+      ∀ x ∈ S, ∃ k : Fin (circDiam S + 1), x = a + k.val • (1 : ZMod p) := by
+  haveI : NeZero p := ⟨Nat.Prime.ne_zero hp.out⟩
+  -- The optimal starting point achieves the minimum spread
+  have hcd : circDiam S = Finset.inf' Finset.univ Finset.univ_nonempty
+      (fun a => circSpreadFrom S a) := by simp [circDiam, hS]
+  -- There exists a achieving the inf
+  obtain ⟨a, _, ha_eq⟩ := Finset.exists_mem_eq_inf' Finset.univ_nonempty
+    (fun a => circSpreadFrom S a)
+  refine ⟨a, fun x hx => ?_⟩
+  have hval_le : ZMod.val (x - a) ≤ circDiam S := by
+    rw [hcd]
+    calc ZMod.val (x - a)
+        ≤ circSpreadFrom S a :=
+          Finset.le_sup (f := fun s => ZMod.val (s - a)) hx
+      _ = _ := ha_eq.symm
+  exact ⟨⟨ZMod.val (x - a), by omega⟩, by
+    simp only [nsmul_eq_mul, mul_one, ZMod.natCast_val, ZMod.cast_id', id]; ring⟩
+
 /-- **Freiman's theorem for Z/pZ** (simplified).
     Sets with small doubling are contained in short arithmetic progressions.
 
