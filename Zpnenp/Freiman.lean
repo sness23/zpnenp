@@ -255,7 +255,21 @@ theorem freiman_ZMod (p : ℕ) [Fact p.Prime] (A : Finset (ZMod p))
     ∃ (a d : ZMod p) (L : ℕ),
       L ≤ K ^ 2 * #A ∧
       ∀ x ∈ A, ∃ k : Fin L, x = a + k.val • d := by
-  sorry -- Freiman's theorem for Z/pZ
+  haveI : NeZero p := ⟨Nat.Prime.ne_zero (Fact.out)⟩
+  -- Case split: if K²|A| ≥ p, use the trivial AP (all of Z/pZ)
+  by_cases hbig : p ≤ K ^ 2 * #A
+  · -- Trivial case: A ⊆ Z/pZ = {0, 0+1, 0+2·1, ..., 0+(p-1)·1}
+    refine ⟨0, 1, p, hbig, fun x _ => ?_⟩
+    refine ⟨⟨ZMod.val x, ZMod.val_lt x⟩, ?_⟩
+    simp [nsmul_eq_mul, mul_one, ZMod.natCast_val, ZMod.cast_id']
+  · -- Non-trivial case: K²|A| < p
+    -- This requires the full Freiman argument:
+    -- Ruzsa covering + Plünnecke-Ruzsa + Z/pZ field structure
+    -- The difference set A - A has |A - A| ≤ K²|A| < p (by Plünnecke-Ruzsa)
+    -- A is covered by ≤ K translates of A - A (by Ruzsa covering)
+    -- In Z/pZ, this covering yields AP containment
+    push_neg at hbig
+    sorry -- The non-trivial Freiman argument (K²|A| < p)
 
 /-- The subset sums of A contain A ∪ {0} (singletons + empty set). -/
 theorem insert_zero_union_subset_subsetSumsZMod (p : ℕ)
