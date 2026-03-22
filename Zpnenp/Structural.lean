@@ -41,8 +41,8 @@ solves the problem efficiently.
 
 The "hard core" is the intermediate density regime d ≈ 1.
 
-TODO: Formalize the pigeonhole density argument
-TODO: Formalize the density definition d = n / log₂(max aᵢ)
+See Density.lean for the pigeonhole density argument (pigeonhole_collision)
+and density definitions (isHighDensity, isLowDensity, isCriticalDensity).
 -/
 
 /-! ## Structure of Hard Instances

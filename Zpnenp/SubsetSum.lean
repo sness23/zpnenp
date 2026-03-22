@@ -61,3 +61,20 @@ def subsetSums (s : Finset ℤ) : Finset ℤ :=
 theorem mem_subsetSums {s : Finset ℤ} {t : ℤ} :
     t ∈ subsetSums s ↔ SubsetSum s t := by
   simp [subsetSums, SubsetSum, mem_image]
+
+/-- Subset sums are monotone: larger sets have more achievable sums. -/
+theorem subsetSums_mono {s t : Finset ℤ} (h : s ⊆ t) :
+    subsetSums s ⊆ subsetSums t := by
+  intro x hx
+  rw [mem_subsetSums] at hx ⊢
+  exact subsetSum_mono h hx
+
+/-- 0 is always an achievable subset sum (the empty subset). -/
+theorem zero_mem_subsetSums (s : Finset ℤ) : (0 : ℤ) ∈ subsetSums s := by
+  rw [mem_subsetSums]; exact subsetSum_zero s
+
+/-- Each element is an achievable subset sum (the singleton subset). -/
+theorem mem_subsetSums_of_mem {s : Finset ℤ} {a : ℤ} (ha : a ∈ s) :
+    a ∈ subsetSums s := by
+  rw [mem_subsetSums]
+  exact ⟨{a}, Finset.mem_powerset.mpr (Finset.singleton_subset_iff.mpr ha), by simp⟩

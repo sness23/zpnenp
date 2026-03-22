@@ -90,6 +90,33 @@ a non-empty subsequence summing to zero.
 
 For G = ℤ/nℤ: D(ℤ/nℤ) = n
 
-TODO: Formalize Davenport constant definition and D(ℤ/nℤ) = n
-TODO: Formalize Olson's theorem for the fixed-length zero-sum problem
+See Davenport.lean for D(ℤ/nℤ) = n and Inverse.lean for the inverse theorem.
 -/
+
+/-! ## Reduction: Integer Subset Sum → Modular Subset Sum
+
+If SubsetSum s t holds over ℤ (some subset sums to t), then
+reducing mod n, the same subset sums to t mod n. This connects
+integer Subset Sum to modular zero-sum theory. -/
+
+/-- Integer Subset Sum reduces to modular Subset Sum:
+    if a subset of integers sums to t, reducing mod n gives
+    a subset summing to t mod n. -/
+theorem subsetSum_mod_of_subsetSum (s : Finset ℤ) (t : ℤ) (n : ℕ)
+    (h : SubsetSum s t) : ∃ s' ∈ s.powerset, (n : ℤ) ∣ (s'.sum id - t) := by
+  obtain ⟨s', hs'mem, hs'sum⟩ := h
+  exact ⟨s', hs'mem, by rw [hs'sum, sub_self]; exact dvd_zero _⟩
+
+/-- If SubsetSum s 0 holds (zero-target), then ModSubsetSumZero holds
+    for every modulus. A zero-sum over ℤ is a zero-sum mod n. -/
+theorem modSubsetSumZero_of_subsetSumZero (s : Finset ℤ) (n : ℕ)
+    (h : SubsetSumZero s) : ModSubsetSumZero s n := by
+  obtain ⟨s', hs'mem, hs'ne, hs'sum⟩ := h
+  exact ⟨s', hs'mem, hs'ne, by rw [hs'sum]; exact dvd_zero _⟩
+
+/-- Contrapositive: if modular zero-sum is impossible (ModSubsetSumZero
+    is false), then integer zero-sum is also impossible. This is how
+    modular results give LOWER BOUNDS for integer problems. -/
+theorem not_subsetSumZero_of_not_modSubsetSumZero (s : Finset ℤ) (n : ℕ)
+    (h : ¬ModSubsetSumZero s n) : ¬SubsetSumZero s :=
+  fun hzs => h (modSubsetSumZero_of_subsetSumZero s n hzs)
