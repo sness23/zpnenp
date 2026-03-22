@@ -181,6 +181,27 @@ theorem zeroSumFree_implies_injective_prefixSums {n : ℕ} (hn : 1 < n)
   exact ZeroSumFree.prefix_sums_injective (by omega) hzsf
     (by omega) (by omega) hne heq
 
+/-- **The complete PHP → zero-sum pipeline**: For any list of n elements
+    in ZMod n, the structured PHP produces a collision in prefix sums,
+    and that collision extracts a contiguous zero-sum subsequence.
+
+    This combines `davenportPHP_not_injective` with `collision_gives_zerosum`
+    into a single statement that goes from input to zero-sum witness. -/
+theorem structured_PHP_gives_zerosum {n : ℕ} (hn : 0 < n)
+    (l : List (ZMod n)) (hl : l.length = n) :
+    ∃ (i j : ℕ), i < j ∧ j ≤ n ∧
+      ((l.drop i).take (j - i)).sum = 0 ∧
+      0 < j - i := by
+  haveI : NeZero n := ⟨by omega⟩
+  obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab, heq⟩ := davenportPHP_not_injective hn l hl
+  simp only [davenportPHP] at heq
+  -- WLOG a < b (swap if needed)
+  -- a b : ℕ with ha : a < n+1, hb : b < n+1, hab : (a,ha) ≠ (b,hb)
+  have hne : a ≠ b := fun h => hab (Fin.ext h)
+  rcases Nat.lt_or_gt_of_ne hne with h | h
+  · exact ⟨a, b, h, by omega, collision_gives_zerosum l h (by omega) heq, by omega⟩
+  · exact ⟨b, a, h, by omega, collision_gives_zerosum l h (by omega) heq.symm, by omega⟩
+
 /-! ## Summary and Open Questions
 
 **Established connections:**
