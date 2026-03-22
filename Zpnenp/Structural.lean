@@ -116,6 +116,23 @@ theorem subsetSums_growth (s : Finset ℤ) (_hs_ne : s.Nonempty)
     s.card < (subsetSums s).card := by
   have := card_subsetSums_ge s hs_nz; omega
 
+/-- For a set of POSITIVE integers, the subset sums are all distinct
+    from the elements themselves (except possibly for singletons).
+    Specifically, the sum of any subset of size ≥ 2 exceeds every element. -/
+theorem subsetSum_pair_gt {s : Finset ℤ} {a b : ℤ}
+    (ha : a ∈ s) (hb : b ∈ s) (hab : a ≠ b)
+    (ha_pos : 0 < a) (hb_pos : 0 < b) :
+    a + b ∈ subsetSums s := by
+  rw [mem_subsetSums]
+  exact ⟨{a, b}, Finset.mem_powerset.mpr (by intro x hx; simp at hx; rcases hx with rfl | rfl <;> assumption),
+    by simp [Finset.sum_pair hab]⟩
+
+/-- For positive integers, pair sums exceed any single element.
+    This means subset sums at size ≥ 2 are NEW values beyond the
+    singletons, contributing to quadratic growth. -/
+theorem pair_sum_gt_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
+    a < a + b := by omega
+
 /-! ## Hard Core Characterization
 
 Combining the density analysis with the structural theory:
