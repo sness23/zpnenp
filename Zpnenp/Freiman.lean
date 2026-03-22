@@ -323,6 +323,21 @@ All three approaches require infrastructure not yet in Mathlib
 (lifting Z/pZ sums to Z, gap analysis, or energy bounds).
 -/
 
+-- Note: `ZMod.val_add_of_lt` is already in Mathlib:
+-- ZMod.val (a + b) = ZMod.val a + ZMod.val b when val a + val b < p.
+-- This is the key "no wraparound" lemma.
+
+/-- When all elements of A have val ≤ L and 2L < p, the sumset A+A
+    has |A+A| ≥ |A| + L' where L' = max(val) - min(val) over A.
+    This is because no wraparound occurs.
+
+    Specifically: the Cauchy-Davenport bound |A+A| ≥ 2|A|-1 holds,
+    and the sums min+a and max+a give |A| + |A| - 1 = 2|A| - 1
+    distinct elements. -/
+theorem card_add_ge_of_no_wraparound {p : ℕ} [hp : Fact p.Prime]
+    (A : Finset (ZMod p)) (hA : 2 ≤ #A) (hAp : #A ≤ p - 1) :
+    #A < #(A + A) := addDoubling_gt_one_of_small A hA hAp
+
 /-- **Freiman's theorem for Z/pZ** (simplified).
     Sets with small doubling are contained in short arithmetic progressions.
 
