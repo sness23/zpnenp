@@ -241,3 +241,25 @@ theorem inverse_davenport (n : ℕ) (hn : 1 < n) (s : Multiset (ZMod n))
     exact ⟨g, isUnit_of_replicate_zeroSumFree hn (hs_eq ▸ hzsf), hs_eq⟩
   · rintro ⟨g, hg, rfl⟩
     exact zeroSumFree_replicate_unit n hn g hg
+
+/-! ## Corollaries of the Inverse Davenport Theorem -/
+
+/-- A zero-sum free multiset of size n-1 has all elements equal. -/
+theorem ZeroSumFree.eq_replicate {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hzsf : ZeroSumFree s) (hcard : s.card = n - 1) :
+    ∃ g : ZMod n, s = Multiset.replicate (n - 1) g :=
+  let ⟨g, _, hg⟩ := (inverse_davenport n hn s hcard).mp hzsf
+  ⟨g, hg⟩
+
+/-- The common element of a maximal zero-sum free multiset is a unit. -/
+theorem ZeroSumFree.common_element_isUnit {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hzsf : ZeroSumFree s) (hcard : s.card = n - 1) :
+    ∃ g : ZMod n, IsUnit g ∧ s = Multiset.replicate (n - 1) g :=
+  (inverse_davenport n hn s hcard).mp hzsf
+
+/-- A multiset of size n-1 with ≥ 2 distinct values is NOT zero-sum free.
+    Contrapositive of the inverse Davenport theorem. -/
+theorem not_zeroSumFree_of_two_values {n : ℕ} (hn : 1 < n) {s : Multiset (ZMod n)}
+    (hcard : s.card = n - 1) {a b : ZMod n} (ha : a ∈ s) (hb : b ∈ s) (hab : a ≠ b) :
+    ¬ZeroSumFree s :=
+  fun hzsf => hab (ZeroSumFree.all_eq hn hzsf hcard ha hb)

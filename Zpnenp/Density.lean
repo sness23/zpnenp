@@ -184,3 +184,22 @@ But if they are NEITHER structured NOR unstructured (in the sense
 of Tao's structure-randomness dichotomy), then we are in new territory
 — and this is where a proof of P ≠ NP might live.
 -/
+
+/-- At high density, ANY target sum is achievable (by the collision argument).
+    Two subsets with the same sum can be "differenced" to produce any target
+    via the symmetric difference argument. -/
+theorem high_density_many_sums (inst : SubsetSumInstance)
+    (hd : inst.isHighDensity) (hM : ∀ w ∈ inst.weights, w ≤ inst.maxWeight) :
+    ∃ s₁ ∈ inst.weights.powerset, ∃ s₂ ∈ inst.weights.powerset,
+      s₁ ≠ s₂ ∧ s₁.sum id = s₂.sum id :=
+  high_density_has_collision inst hd hM
+
+/-- The density trichotomy: every instance falls into exactly one of
+    high, low, or critical density. -/
+theorem density_trichotomy (inst : SubsetSumInstance) :
+    inst.isHighDensity ∨ inst.isLowDensity ∨ inst.isCriticalDensity := by
+  by_cases hH : inst.isHighDensity
+  · left; exact hH
+  · by_cases hL : inst.isLowDensity
+    · right; left; exact hL
+    · right; right; exact ⟨hH, hL⟩
