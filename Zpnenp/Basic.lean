@@ -19,3 +19,4 @@ import Zpnenp.InverseEGZ
 import Zpnenp.Freiman
 import Zpnenp.ProofComplexity
 import Zpnenp.SumProduct
+import Zpnenp.HardStructure
